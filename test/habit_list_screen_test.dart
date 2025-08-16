@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:habit_breaker_app/features/habits/screens/habit_list_screen.dart';
 import 'package:habit_breaker_app/models/habit.dart';
 import 'package:habit_breaker_app/core/providers/habit_providers.dart';
+import 'package:habit_breaker_app/localization/app_localizations.dart';
+import 'package:habit_breaker_app/localization/app_localizations_delegate.dart';
 
 // Mock habit data
 final mockHabits = [
@@ -14,6 +17,7 @@ final mockHabits = [
     createdDate: DateTime.now().subtract(const Duration(days: 5)),
     targetEndDate: DateTime.now().add(const Duration(days: 30)),
     streakCount: 3,
+    startDate: DateTime.now().subtract(const Duration(days: 5)),
   ),
   Habit(
     id: '2',
@@ -22,6 +26,7 @@ final mockHabits = [
     createdDate: DateTime.now().subtract(const Duration(days: 10)),
     targetEndDate: DateTime.now().add(const Duration(days: 30)),
     streakCount: 7,
+    startDate: DateTime.now().subtract(const Duration(days: 10)),
   ),
 ];
 
@@ -30,7 +35,7 @@ void main() {
     // Mock the habits provider
     final container = ProviderContainer(
       overrides: [
-        habitsProvider.overrideWith((ref) => Future.value(mockHabits)),
+        habitsProvider.overrideWith((ref) async => mockHabits),
       ],
     );
 
@@ -39,6 +44,17 @@ void main() {
         parent: container,
         child: MaterialApp(
           home: const HabitListScreen(),
+          localizationsDelegates: const [
+            AppLocalizationsDelegate(),
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('en'),
+            Locale('zh'),
+          ],
+          locale: const Locale('zh'),
         ),
       ),
     );
@@ -55,7 +71,7 @@ void main() {
     // Mock the habits provider with empty list
     final container = ProviderContainer(
       overrides: [
-        habitsProvider.overrideWith((ref) => Future.value([])),
+        habitsProvider.overrideWith((ref) async => []),
       ],
     );
 
@@ -64,6 +80,17 @@ void main() {
         parent: container,
         child: MaterialApp(
           home: const HabitListScreen(),
+          localizationsDelegates: const [
+            AppLocalizationsDelegate(),
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('en'),
+            Locale('zh'),
+          ],
+          locale: const Locale('zh'),
         ),
       ),
     );
@@ -72,6 +99,6 @@ void main() {
     await tester.pumpAndSettle();
 
     // Verify that empty state message is displayed
-    expect(find.text('No habits yet. Add your first habit!'), findsOneWidget);
+    expect(find.text('还没有习惯。添加你的第一个习惯！'), findsOneWidget);
   });
 }

@@ -9,6 +9,7 @@ void main() {
         name: 'Test Habit',
         description: 'Test Description',
         createdDate: DateTime.now(),
+        startDate: DateTime.now(),
         targetEndDate: DateTime.now().add(const Duration(days: 30)),
       );
 
@@ -25,6 +26,7 @@ void main() {
         name: 'Test Habit',
         description: 'Test Description',
         createdDate: DateTime.now(),
+        startDate: DateTime.now(),
         targetEndDate: DateTime.now().add(const Duration(days: 30)),
       );
 
@@ -46,6 +48,7 @@ void main() {
         name: 'Test Habit',
         description: 'Test Description',
         createdDate: date,
+        startDate: date,
         targetEndDate: date.add(const Duration(days: 30)),
       );
 
@@ -54,6 +57,7 @@ void main() {
         name: 'Test Habit',
         description: 'Test Description',
         createdDate: date,
+        startDate: date,
         targetEndDate: date.add(const Duration(days: 30)),
       );
 

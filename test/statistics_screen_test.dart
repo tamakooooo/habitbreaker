@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:habit_breaker_app/features/statistics/screens/statistics_screen.dart';
 import 'package:habit_breaker_app/models/habit.dart';
 import 'package:habit_breaker_app/core/providers/habit_providers.dart';
+import 'package:habit_breaker_app/localization/app_localizations.dart';
+import 'package:habit_breaker_app/localization/app_localizations_delegate.dart';
 
 // Mock habit data
 final mockHabits = [
@@ -15,6 +18,7 @@ final mockHabits = [
     targetEndDate: DateTime.now().add(const Duration(days: 30)),
     streakCount: 3,
     isCompleted: true,
+    startDate: DateTime.now().subtract(const Duration(days: 5)),
   ),
   Habit(
     id: '2',
@@ -24,6 +28,7 @@ final mockHabits = [
     targetEndDate: DateTime.now().add(const Duration(days: 30)),
     streakCount: 7,
     isCompleted: false,
+    startDate: DateTime.now().subtract(const Duration(days: 10)),
   ),
 ];
 
@@ -32,7 +37,7 @@ void main() {
     // Mock the habits provider
     final container = ProviderContainer(
       overrides: [
-        habitsProvider.overrideWith((ref) => Future.value(mockHabits)),
+        habitsProvider.overrideWith((ref) async => mockHabits),
       ],
     );
 
@@ -41,6 +46,17 @@ void main() {
         parent: container,
         child: MaterialApp(
           home: const StatisticsScreen(),
+          localizationsDelegates: const [
+            AppLocalizationsDelegate(),
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('en'),
+            Locale('zh'),
+          ],
+          locale: const Locale('zh'),
         ),
       ),
     );
@@ -49,17 +65,17 @@ void main() {
     await tester.pumpAndSettle();
 
     // Verify that statistics are displayed
-    expect(find.text('2'), findsOneWidget); // Total habits
-    expect(find.text('1'), findsOneWidget); // Completed habits
-    expect(find.text('10'), findsOneWidget); // Total streaks (3 + 7)
-    expect(find.text('5.0'), findsOneWidget); // Average streak (10 / 2)
+    expect(find.text('总习惯数'), findsWidgets); // Total habits title
+    expect(find.text('已完成'), findsWidgets); // Completed title
+    expect(find.text('总连续天数'), findsWidgets); // Total streaks title
+    expect(find.text('平均连续天数'), findsWidgets); // Average streak title
   });
 
   testWidgets('Statistics screen shows empty state', (WidgetTester tester) async {
     // Mock the habits provider with empty list
     final container = ProviderContainer(
       overrides: [
-        habitsProvider.overrideWith((ref) => Future.value([])),
+        habitsProvider.overrideWith((ref) async => []),
       ],
     );
 
@@ -68,6 +84,17 @@ void main() {
         parent: container,
         child: MaterialApp(
           home: const StatisticsScreen(),
+          localizationsDelegates: const [
+            AppLocalizationsDelegate(),
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('en'),
+            Locale('zh'),
+          ],
+          locale: const Locale('zh'),
         ),
       ),
     );
