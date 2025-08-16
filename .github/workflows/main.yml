@@ -1,4 +1,4 @@
-name: Flutter CI
+name: Flutter CI/CD
 
 on:
   push:
@@ -38,16 +38,47 @@ jobs:
       run: flutter pub get
     - name: Build web with verbose output
       run: flutter build web -v
+    - name: Build APK
+      run: flutter build apk --release
     - name: Upload web build
       uses: actions/upload-artifact@v3
       with:
         name: web-build
         path: build/web
-    #暂时移除APK构建，先专注于修复Web构建问题
-    #- name: Build APK
-    #  run: flutter build apk
-    #- name: Upload APK
-    #  uses: actions/upload-artifact@v3
-    #  with:
+    - name: Upload APK artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: apk-build
+        path: build/app/outputs/flutter-apk/app-release.apk
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+    - name: Download APK artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: apk-build
+        path: ./
+    - name: Create GitHub Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ github.run_number }}
+        release_name: Release v${{ github.run_number }}
+        draft: false
+        prerelease: false
+    - name: Upload Release APK
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./app-release.apk
+        asset_name: habit_breaker_app-v${{ github.run_number }}.apk
+        asset_content_type: application/vnd.android.package-archive    #  with:
     #    name: apk-build
     #    path: build/app/outputs/flutter-apk/app-release.apk
