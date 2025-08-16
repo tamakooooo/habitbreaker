@@ -16,10 +16,12 @@ jobs:
       uses: subosito/flutter-action@v2
       with:
         flutter-version: '3.16.9'
+    - name: Display Flutter version
+      run: flutter --version
     - name: Install dependencies
       run: flutter pub get
-    - name: Run tests
-      run: flutter test
+    - name: Run tests with verbose output
+      run: flutter test -v
 
   build:
     needs: test
@@ -30,19 +32,22 @@ jobs:
       uses: subosito/flutter-action@v2
       with:
         flutter-version: '3.16.9'
+    - name: Display Flutter version
+      run: flutter --version
     - name: Install dependencies
       run: flutter pub get
-    - name: Build web
-      run: flutter build web
-    - name: Build APK
-      run: flutter build apk
+    - name: Build web with verbose output
+      run: flutter build web -v
     - name: Upload web build
       uses: actions/upload-artifact@v3
       with:
         name: web-build
         path: build/web
-    - name: Upload APK
-      uses: actions/upload-artifact@v3
-      with:
-        name: apk-build
-        path: build/app/outputs/flutter-apk/app-release.apk
+    #暂时移除APK构建，先专注于修复Web构建问题
+    #- name: Build APK
+    #  run: flutter build apk
+    #- name: Upload APK
+    #  uses: actions/upload-artifact@v3
+    #  with:
+    #    name: apk-build
+    #    path: build/app/outputs/flutter-apk/app-release.apk
