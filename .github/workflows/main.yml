@@ -57,8 +57,19 @@ jobs:
         flutter-version: '3.19.0'
     - name: Display Flutter version
       run: flutter --version
-    - name: Install dependencies
-      run: flutter pub get
+    - name: Display Dart version before pub get in build
+      run: dart --version
+    - name: Install dependencies with verbose output in build
+      run: flutter pub get -v
+    - name: Check pub get results in build
+      if: failure()
+      run: |
+        echo "pub get failed in build. Printing Flutter version..."
+        flutter --version
+        echo "Printing Dart version..."
+        dart --version
+        echo "Printing environment variables..."
+        env
     - name: Build web with verbose output
       run: flutter build web -v
     - name: Build APK
