@@ -1,0 +1,48 @@
+name: Flutter CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.16.9'
+    - name: Install dependencies
+      run: flutter pub get
+    - name: Run tests
+      run: flutter test
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.16.9'
+    - name: Install dependencies
+      run: flutter pub get
+    - name: Build web
+      run: flutter build web
+    - name: Build APK
+      run: flutter build apk
+    - name: Upload web build
+      uses: actions/upload-artifact@v3
+      with:
+        name: web-build
+        path: build/web
+    - name: Upload APK
+      uses: actions/upload-artifact@v3
+      with:
+        name: apk-build
+        path: build/app/outputs/flutter-apk/app-release.apk
