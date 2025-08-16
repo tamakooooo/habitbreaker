@@ -21,7 +21,17 @@ jobs:
     - name: Install dependencies
       run: flutter pub get
     - name: Run tests with verbose output
-      run: flutter test -v
+      run: |
+        echo "Flutter version: $(flutter --version)"
+        echo "Dart version: $(dart --version)"
+        flutter test -v
+    - name: Check test results
+      if: failure()
+      run: |
+        echo "Test failed. Printing directory structure..."
+        ls -la
+        echo "Printing pubspec.yaml..."
+        cat pubspec.yaml
 
   build:
     needs: test
