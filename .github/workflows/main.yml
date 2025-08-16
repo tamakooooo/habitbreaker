@@ -18,8 +18,21 @@ jobs:
         flutter-version: '3.19.0'
     - name: Display Flutter version
       run: flutter --version
-    - name: Install dependencies
-      run: flutter pub get
+    - name: Display Dart version before pub get
+      run: dart --version
+    - name: Install dependencies with verbose output
+      run: flutter pub get -v
+    - name: Check pub get results
+      if: failure()
+      run: |
+        echo "pub get failed. Printing Flutter version..."
+        flutter --version
+        echo "Printing Dart version..."
+        dart --version
+        echo "Printing .flutter directory..."
+        ls -la $HOME/.flutter
+        echo "Printing environment variables..."
+        env
     - name: Run tests with verbose output
       run: |
         echo "Flutter version: $(flutter --version)"
