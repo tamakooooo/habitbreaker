@@ -42,8 +42,8 @@ dependencies:
   flutter_secure_storage: ^8.0.0
   shared_preferences: ^2.2.0
   
-  # Internationalization - keep compatible with Flutter SDK
-  intl: 0.18.1
+  # Internationalization - updated for Flutter 3.35.1 compatibility
+  intl: ^0.19.0
   flutter_localizations:
     sdk: flutter
   

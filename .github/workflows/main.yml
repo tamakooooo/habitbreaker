@@ -16,6 +16,7 @@ jobs:
       uses: subosito/flutter-action@v2
       with:
         flutter-version: '3.35.1'
+        cache: true
     - name: Display Flutter version
       run: flutter --version
     - name: Display Dart version before pub get
@@ -55,6 +56,7 @@ jobs:
       uses: subosito/flutter-action@v2
       with:
         flutter-version: '3.35.1'
+        cache: true
     - name: Display Flutter version
       run: flutter --version
     - name: Display Dart version before pub get in build
