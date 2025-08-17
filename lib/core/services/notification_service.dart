@@ -22,9 +22,6 @@ class NotificationService {
       requestAlertPermission: true,
       requestBadgePermission: true,
       requestSoundPermission: true,
-      onDidReceiveLocalNotification: (int id, String? title, String? body, String? payload) async {
-        // Handle notification tap when app is in foreground
-      },
     );
 
     final InitializationSettings initializationSettings = InitializationSettings(
@@ -144,7 +141,6 @@ class NotificationService {
       _nextInstanceOfTime(time),
       platformChannelSpecifics,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
     );
   }

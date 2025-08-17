@@ -35,7 +35,7 @@ dependencies:
   
   # Notifications & Background Tasks
   flutter_local_notifications: ^19.4.0
-  workmanager: ^0.5.2
+  workmanager: ^0.9.0+2
   
   # Storage
   flutter_secure_storage: ^9.0.0
