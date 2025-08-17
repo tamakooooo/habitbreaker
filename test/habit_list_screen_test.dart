@@ -69,7 +69,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          habitsProvider.overrideWith((ref) async => mockHabits),
+          habitsProvider.overrideWith((ref) async => []),
         ],
         child: const MaterialApp(
           home: HabitListScreen(),
@@ -92,6 +92,6 @@ void main() {
     await tester.pumpAndSettle();
 
     // Verify that empty state message is displayed
-    expect(find.text('No habits yet. Add your first habit!'), findsOneWidget);
+    expect(find.text('还没有习惯。添加你的第一个习惯！'), findsOneWidget);
   });
 }

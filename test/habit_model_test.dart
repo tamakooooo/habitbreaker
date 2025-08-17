@@ -33,12 +33,14 @@ void main() {
       final updatedHabit = habit.copyWith(
         name: 'Updated Habit',
         streakCount: 5,
+        isCompleted: true,
       );
 
       expect(updatedHabit.id, '1');
       expect(updatedHabit.name, 'Updated Habit');
       expect(updatedHabit.description, 'Test Description');
       expect(updatedHabit.streakCount, 5);
+      expect(updatedHabit.isCompleted, true);
     });
 
     test('Habit equality works correctly', () {
