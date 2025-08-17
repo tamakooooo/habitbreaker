@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:habit_breaker_app/models/habit.dart';
+import 'package:habit_breaker_app/localization/app_localizations.dart';
 
 class HabitCard extends StatelessWidget {
   final Habit habit;
@@ -94,14 +95,14 @@ class HabitCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Start: ${habit.startDate.toString().split(' ').first}',
+                    '${AppLocalizations.of(context).stage}: ${_getStageLabel(context)}',
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.grey[600],
                     ),
                   ),
                   Text(
-                    'End: ${habit.targetEndDate.toString().split(' ').first}',
+                    'Days: ${(habit.currentStageEndDate.difference(DateTime.now()).inDays).toString()}',
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.grey[600],
@@ -116,9 +117,28 @@ class HabitCard extends StatelessWidget {
     );
   }
   
+  String _getStageLabel(BuildContext context) {
+    switch (habit.stage) {
+      case HabitStage.hours24:
+        return AppLocalizations.of(context).stageHours24;
+      case HabitStage.days3:
+        return AppLocalizations.of(context).stageDays3;
+      case HabitStage.week1:
+        return AppLocalizations.of(context).stageWeek1;
+      case HabitStage.month1:
+        return AppLocalizations.of(context).stageMonth1;
+      case HabitStage.quarter1:
+        return AppLocalizations.of(context).stageQuarter1;
+      case HabitStage.year1:
+        return AppLocalizations.of(context).stageYear1;
+      default:
+        return '';
+    }
+  }
+
   double _calculateProgress() {
-    final totalDuration = habit.targetEndDate.difference(habit.startDate);
-    final elapsedDuration = DateTime.now().difference(habit.startDate);
+    final totalDuration = habit.currentStageEndDate.difference(habit.currentStageStartDate);
+    final elapsedDuration = DateTime.now().difference(habit.currentStageStartDate);
     
     if (totalDuration.inSeconds <= 0) return 1.0;
     

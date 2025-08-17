@@ -26,13 +26,16 @@ class HabitAdapter extends TypeAdapter<Habit> {
       isCompleted: fields[5] as bool,
       streakCount: fields[6] as int,
       completionDates: (fields[7] as List?)?.cast<DateTime>(),
+      stage: fields[9] as HabitStage,
+      currentStageStartDate: fields[10] as DateTime?,
+      currentStageEndDate: fields[11] as DateTime?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Habit obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(12)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -50,7 +53,13 @@ class HabitAdapter extends TypeAdapter<Habit> {
       ..writeByte(7)
       ..write(obj.completionDates)
       ..writeByte(8)
-      ..write(obj.startDate);
+      ..write(obj.startDate)
+      ..writeByte(9)
+      ..write(obj.stage)
+      ..writeByte(10)
+      ..write(obj.currentStageStartDate)
+      ..writeByte(11)
+      ..write(obj.currentStageEndDate);
   }
 
   @override
@@ -80,6 +89,14 @@ Habit _$HabitFromJson(Map<String, dynamic> json) => Habit(
       completionDates: (json['completionDates'] as List<dynamic>?)
           ?.map((e) => DateTime.parse(e as String))
           .toList(),
+      stage: $enumDecodeNullable(_$HabitStageEnumMap, json['stage']) ??
+          HabitStage.hours24,
+      currentStageStartDate: json['currentStageStartDate'] == null
+          ? null
+          : DateTime.parse(json['currentStageStartDate'] as String),
+      currentStageEndDate: json['currentStageEndDate'] == null
+          ? null
+          : DateTime.parse(json['currentStageEndDate'] as String),
     );
 
 Map<String, dynamic> _$HabitToJson(Habit instance) => <String, dynamic>{
@@ -93,4 +110,16 @@ Map<String, dynamic> _$HabitToJson(Habit instance) => <String, dynamic>{
       'completionDates':
           instance.completionDates.map((e) => e.toIso8601String()).toList(),
       'startDate': instance.startDate.toIso8601String(),
+      'stage': _$HabitStageEnumMap[instance.stage]!,
+      'currentStageStartDate': instance.currentStageStartDate.toIso8601String(),
+      'currentStageEndDate': instance.currentStageEndDate.toIso8601String(),
     };
+
+const _$HabitStageEnumMap = {
+  HabitStage.hours24: 'hours24',
+  HabitStage.days3: 'days3',
+  HabitStage.week1: 'week1',
+  HabitStage.month1: 'month1',
+  HabitStage.quarter1: 'quarter1',
+  HabitStage.year1: 'year1',
+};

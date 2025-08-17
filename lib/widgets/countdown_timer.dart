@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:habit_breaker_app/models/habit.dart';
 import 'package:habit_breaker_app/localization/app_localizations.dart';
+import 'package:habit_breaker_app/core/providers/habit_providers.dart';
 import 'dart:async';
 
-class CountdownTimer extends StatefulWidget {
+class CountdownTimer extends ConsumerStatefulWidget {
   final Habit habit;
   
   const CountdownTimer({super.key, required this.habit});
@@ -12,7 +14,7 @@ class CountdownTimer extends StatefulWidget {
   State<CountdownTimer> createState() => _CountdownTimerState();
 }
 
-class _CountdownTimerState extends State<CountdownTimer> {
+class _CountdownTimerState extends ConsumerState<CountdownTimer> {
   late DateTime _targetDate;
   late Duration _remainingTime;
   late Timer _timer;
@@ -20,11 +22,12 @@ class _CountdownTimerState extends State<CountdownTimer> {
   @override
   void initState() {
     super.initState();
-    _targetDate = widget.habit.targetEndDate;
+    _targetDate = widget.habit.currentStageEndDate;
     _updateRemainingTime();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         _updateRemainingTime();
+        _checkStageCompletion();
       });
     });
   }
@@ -35,6 +38,38 @@ class _CountdownTimerState extends State<CountdownTimer> {
       _remainingTime = _targetDate.difference(now);
     } else {
       _remainingTime = Duration.zero;
+    }
+  }
+  
+  void _checkStageCompletion() {
+    final now = DateTime.now();
+    if (now.isAfter(_targetDate)) {
+      // Stage completed, move to next stage
+      _advanceToNextStage();
+    }
+  }
+  
+  void _advanceToNextStage() async {
+    // Update the habit with the next stage
+    try {
+      final habitService = ref.read(habitServiceProvider);
+      final updatedHabit = await habitService.advanceHabitToNextStage(widget.habit.id);
+      
+      if (mounted) {
+        setState(() {
+          _targetDate = updatedHabit.currentStageEndDate;
+        });
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Stage completed! Moving to next stage.')),
+        );
+      }
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error advancing stage: $error')),
+        );
+      }
     }
   }
 
@@ -58,7 +93,7 @@ class _CountdownTimerState extends State<CountdownTimer> {
         child: Column(
           children: [
             Text(
-              AppLocalizations.of(context).timeRemaining,
+              '${AppLocalizations.of(context).timeRemaining} - ${_getStageLabel(widget.habit.stage)}',
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 16),
@@ -99,10 +134,27 @@ class _CountdownTimerState extends State<CountdownTimer> {
       ),
     );
   }
+  
+  String _getStageLabel(HabitStage stage) {
+    switch (stage) {
+      case HabitStage.hours24:
+        return AppLocalizations.of(context).stage24Hours;
+      case HabitStage.days3:
+        return AppLocalizations.of(context).stage3Days;
+      case HabitStage.week1:
+        return AppLocalizations.of(context).stage1Week;
+      case HabitStage.month1:
+        return AppLocalizations.of(context).stage1Month;
+      case HabitStage.quarter1:
+        return AppLocalizations.of(context).stage1Quarter;
+      case HabitStage.year1:
+        return AppLocalizations.of(context).stage1Year;
+    }
+  }
 
   double _calculateProgress() {
-    final totalDuration = widget.habit.targetEndDate.difference(widget.habit.startDate);
-    final elapsedDuration = DateTime.now().difference(widget.habit.startDate);
+    final totalDuration = widget.habit.currentStageEndDate.difference(widget.habit.currentStageStartDate);
+    final elapsedDuration = DateTime.now().difference(widget.habit.currentStageStartDate);
     
     if (totalDuration.inSeconds <= 0) return 1.0;
     

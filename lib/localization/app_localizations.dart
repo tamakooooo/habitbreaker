@@ -44,6 +44,14 @@ class AppLocalizations {
       'mark_completed_today': 'Mark as Completed Today',
       'days_remaining': 'Days Remaining',
       'time_remaining': 'Time Remaining',
+      'stage': 'Stage',
+      'select_stage': 'Select Stage',
+      'stage_24_hours': '24 Hours',
+      'stage_3_days': '3 Days',
+      'stage_1_week': '1 Week',
+      'stage_1_month': '1 Month',
+      'stage_1_quarter': '1 Quarter',
+      'stage_1_year': '1 Year',
     },
     'zh': {
       'app_name': '戒断不良习惯',
@@ -79,6 +87,14 @@ class AppLocalizations {
       'mark_completed_today': '标记为今日完成',
       'days_remaining': '剩余天数',
       'time_remaining': '剩余时间',
+      'stage': '阶段',
+      'select_stage': '选择阶段',
+      'stage_24_hours': '24小时',
+      'stage_3_days': '3天',
+      'stage_1_week': '1周',
+      'stage_1_month': '1个月',
+      'stage_1_quarter': '1个季度',
+      'stage_1_year': '1年',
     },
   };
 
@@ -115,4 +131,12 @@ class AppLocalizations {
   String get startDate => _localizedValues[locale.languageCode]?['start_date'] ?? 'Start Date';
   String get daysRemaining => _localizedValues[locale.languageCode]?['days_remaining'] ?? 'Days Remaining';
   String get timeRemaining => _localizedValues[locale.languageCode]?['time_remaining'] ?? 'Time Remaining';
+  String get stage => _localizedValues[locale.languageCode]?['stage'] ?? 'Stage';
+  String get selectStage => _localizedValues[locale.languageCode]?['select_stage'] ?? 'Select Stage';
+  String get stage24Hours => _localizedValues[locale.languageCode]?['stage_24_hours'] ?? '24 Hours';
+  String get stage3Days => _localizedValues[locale.languageCode]?['stage_3_days'] ?? '3 Days';
+  String get stage1Week => _localizedValues[locale.languageCode]?['stage_1_week'] ?? '1 Week';
+  String get stage1Month => _localizedValues[locale.languageCode]?['stage_1_month'] ?? '1 Month';
+  String get stage1Quarter => _localizedValues[locale.languageCode]?['stage_1_quarter'] ?? '1 Quarter';
+  String get stage1Year => _localizedValues[locale.languageCode]?['stage_1_year'] ?? '1 Year';
 }

@@ -60,4 +60,47 @@ class HabitService {
     await updateHabit(updatedHabit);
     return updatedHabit;
   }
+  
+  // Advance habit to next stage
+  Future<Habit> advanceHabitToNextStage(String id) async {
+    final habit = await getHabitById(id);
+    final now = DateTime.now();
+    
+    // Determine next stage
+    HabitStage nextStage;
+    switch (habit.stage) {
+      case HabitStage.hours24:
+        nextStage = HabitStage.days3;
+        break;
+      case HabitStage.days3:
+        nextStage = HabitStage.week1;
+        break;
+      case HabitStage.week1:
+        nextStage = HabitStage.month1;
+        break;
+      case HabitStage.month1:
+        nextStage = HabitStage.quarter1;
+        break;
+      case HabitStage.quarter1:
+        nextStage = HabitStage.year1;
+        break;
+      case HabitStage.year1:
+        // Stay at year1 stage
+        nextStage = HabitStage.year1;
+        break;
+    }
+    
+    // Calculate new stage dates
+    final newStageStartDate = now;
+    final newStageEndDate = Habit._calculateStageEndDate(newStageStartDate, nextStage);
+    
+    final updatedHabit = habit.copyWith(
+      stage: nextStage,
+      currentStageStartDate: newStageStartDate,
+      currentStageEndDate: newStageEndDate,
+    );
+    
+    await updateHabit(updatedHabit);
+    return updatedHabit;
+  }
 }

@@ -45,6 +45,25 @@ class HabitDetailBody extends ConsumerWidget {
 
   const HabitDetailBody({super.key, required this.habit});
 
+  String _getStageLabel(HabitStage stage) {
+    switch (stage) {
+      case HabitStage.hours24:
+        return AppLocalizations.of(context).stageHours24;
+      case HabitStage.days3:
+        return AppLocalizations.of(context).stageDays3;
+      case HabitStage.week1:
+        return AppLocalizations.of(context).stageWeek1;
+      case HabitStage.month1:
+        return AppLocalizations.of(context).stageMonth1;
+      case HabitStage.quarter1:
+        return AppLocalizations.of(context).stageQuarter1;
+      case HabitStage.year1:
+        return AppLocalizations.of(context).stageYear1;
+      default:
+        return '';
+    }
+  }
+
   void _completeHabit(BuildContext context, WidgetRef ref) {
     // In a real implementation, you would call the habit service here
     // For now, we'll just show a success message
@@ -71,7 +90,7 @@ class HabitDetailBody extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
           Text('${AppLocalizations.of(context).startDate}: ${habit.startDate.toString().split(' ').first}'),
-          Text('${AppLocalizations.of(context).targetEndDate}: ${habit.targetEndDate.toString().split(' ').first}'),
+          Text('${AppLocalizations.of(context).stage}: ${_getStageLabel(habit.stage)}'),
           const SizedBox(height: 16),
           CountdownTimer(habit: habit),
           const SizedBox(height: 16),
