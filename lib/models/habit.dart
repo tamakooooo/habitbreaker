@@ -73,7 +73,7 @@ class Habit extends Equatable {
     DateTime? currentStageEndDate,
   }) : completionDates = completionDates ?? [],
        currentStageStartDate = currentStageStartDate ?? startDate,
-       currentStageEndDate = currentStageEndDate ?? _calculateStageEndDate(startDate, HabitStage.hours24);
+       currentStageEndDate = currentStageEndDate ?? calculateStageEndDate(startDate, HabitStage.hours24);
 
   Habit copyWith({
     String? id,
@@ -109,7 +109,7 @@ class Habit extends Equatable {
 
   Map<String, dynamic> toJson() => _$HabitToJson(this);
   
-  static DateTime _calculateStageEndDate(DateTime startDate, HabitStage stage) {
+  static DateTime calculateStageEndDate(DateTime startDate, HabitStage stage) {
     switch (stage) {
       case HabitStage.hours24:
         return startDate.add(const Duration(hours: 24));

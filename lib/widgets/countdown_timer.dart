@@ -11,7 +11,7 @@ class CountdownTimer extends ConsumerStatefulWidget {
   const CountdownTimer({super.key, required this.habit});
 
   @override
-  State<CountdownTimer> createState() => _CountdownTimerState();
+  ConsumerState<CountdownTimer> createState() => _CountdownTimerState();
 }
 
 class _CountdownTimerState extends ConsumerState<CountdownTimer> {
@@ -121,7 +121,7 @@ class _CountdownTimerState extends ConsumerState<CountdownTimer> {
             const SizedBox(height: 16),
             LinearProgressIndicator(
               value: _calculateProgress(),
-              backgroundColor: Theme.of(context).dividerColor.withValues(alpha: 0.2),
+              backgroundColor: Theme.of(context).dividerColor.withAlpha((0.2 * 255).round()),
               color: Theme.of(context).primaryColor,
             ),
             const SizedBox(height: 8),

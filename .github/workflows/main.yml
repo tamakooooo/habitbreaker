@@ -1,24 +1,135 @@
-name: Flutter CI/CD
+name: Flutter CI/CD - 零差异构建系统
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, develop ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
 
+env:
+  FLUTTER_VERSION: '3.24.0'
+  JAVA_VERSION: '17'
+  GRADLE_VERSION: '8.1.1'
 jobs:
-  test:
+  env-lock:
     runs-on: ubuntu-latest
-
+    outputs:
+      flutter-version: ${{ steps.env-lock.outputs.flutter-version }}
+      checksums: ${{ steps.cache-checksums.outputs.checksums }}
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Flutter
+    - name: 环境锁定验证
+      id: env-lock
+      run: |
+        echo "flutter-version=$(grep 'flutter:' .fvmrc | sed 's/.*"flutter": "\(.*\)"/\1/')" >> $GITHUB_OUTPUT
+    - name: 生成缓存校验值
+      id: cache-checksums
+      run: |
+        echo "checksums=${{ hashFiles('**/*.lock', '**/pubspec.yaml', 'android/**/*.gradle*', '**/gradle-wrapper.properties') }}" >> $GITHUB_OUTPUT
+
+  test:
+    needs: env-lock
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: 设置Flutter环境
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.35.1'
+        flutter-version: ${{ needs.env-lock.outputs.flutter-version }}
         cache: true
-    - name: Display Flutter version
-      run: flutter --version
+        cache-key: flutter-${{ needs.env-lock.outputs.flutter-version }}-${{ needs.env-lock.outputs.checksums }}
+    - name: 验证构建环境
+      run: ./scripts/validate_environment.sh
+    - name: 缓存依赖
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.pub-cache
+          build/downloads
+        key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+    - name: 安装依赖
+      run: flutter pub get --enforce-lockfile
+    - name: 运行测试
+      run: flutter test --coverage --reporter github
+
+  build-matrix:
+    needs: [env-lock, test]
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        build-type: [apk, aab, web]
+        exclude:
+          - os: windows-latest
+            build-type: aab
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v4
+    - name: 设置Flutter环境
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ needs.env-lock.outputs.flutter-version }}
+        cache: true
+        cache-key: flutter-${{ needs.env-lock.outputs.flutter-version }}-${{ needs.env-lock.outputs.checksums }}
+    - name: 设置Java环境
+      uses: actions/setup-java@v4
+      with:
+        java-version: ${{ env.JAVA_VERSION }}
+        distribution: 'temurin'
+    - name: 缓存Gradle和依赖
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+          ~/.pub-cache
+          build/downloads
+        key: ${{ runner.os }}-gradle-v2-${{ hashFiles('**/gradle.lockfile') }}-${{ hashFiles('**/build.gradle*') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-v2-
+    - name: 验证构建环境
+      run: ./scripts/validate_environment.sh || bash scripts/validate_environment.sh
+    - name: 安装依赖
+      run: flutter pub get --enforce-lockfile
+    - name: 设置签名密钥
+      uses: timheuer/base64-to-file@v1.2
+      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+      with:
+        fileName: 'upload-keystore.jks'
+        fileDir: 'android/app/'
+        encodedString: ${{ secrets.KEYSTORE_BASE64 }}
+    - name: 创建key.properties文件
+      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+      run: |
+        echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/key.properties
+        echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+        echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
+        echo "storeFile=upload-keystore.jks" >> android/key.properties
+    - name: 构建 ${{ matrix.build-type }}
+      run: |
+        case "${{ matrix.build-type }}" in
+          apk)
+            flutter build apk --release --build-number="${{ github.run_number }}"
+            ;;
+          aab)
+            flutter build appbundle --release --build-number="${{ github.run_number }}"
+            ;;
+          web)
+            flutter build web --release
+            ;;
+        esac
+    - name: 上传构建产物
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.os }}-${{ matrix.build-type }}-build
+        path: |
+          build/app/outputs/flutter-apk/*.apk
+          build/app/outputs/bundle/release/*.aab
+          build/web
+    - name: 构建诊断和缓存清理
+      if: always()
+      run: |
+        flutter doctor -v || true
+        flutter clean || true
     - name: Display Dart version before pub get
       run: dart --version
     - name: Install dependencies with verbose output

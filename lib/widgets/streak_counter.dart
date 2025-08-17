@@ -48,7 +48,7 @@ class StreakCounter extends StatelessWidget {
               const SizedBox(height: 12),
               LinearProgressIndicator(
                 value: streakCount > 0 ? 1.0 : 0.0,
-                backgroundColor: Theme.of(context).dividerColor.withValues(alpha: 0.2),
+                backgroundColor: Theme.of(context).dividerColor.withAlpha((0.2 * 255).round()),
                 color: Colors.orange,
               ),
             ],

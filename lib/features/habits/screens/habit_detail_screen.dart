@@ -48,17 +48,17 @@ class HabitDetailBody extends ConsumerWidget {
   String _getStageLabel(HabitStage stage) {
     switch (stage) {
       case HabitStage.hours24:
-        return AppLocalizations.of(context).stageHours24;
+        return '24 Hours';
       case HabitStage.days3:
-        return AppLocalizations.of(context).stageDays3;
+        return '3 Days';
       case HabitStage.week1:
-        return AppLocalizations.of(context).stageWeek1;
+        return '1 Week';
       case HabitStage.month1:
-        return AppLocalizations.of(context).stageMonth1;
+        return '1 Month';
       case HabitStage.quarter1:
-        return AppLocalizations.of(context).stageQuarter1;
+        return '1 Quarter';
       case HabitStage.year1:
-        return AppLocalizations.of(context).stageYear1;
+        return '1 Year';
       default:
         return '';
     }

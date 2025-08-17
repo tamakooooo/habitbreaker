@@ -58,7 +58,7 @@ class HabitCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                      color: Theme.of(context).primaryColor.withAlpha((0.1 * 255).round()),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Column(
@@ -87,7 +87,7 @@ class HabitCard extends StatelessWidget {
               // Progress bar
               LinearProgressIndicator(
                 value: _calculateProgress(),
-                backgroundColor: Theme.of(context).dividerColor.withValues(alpha: 0.2),
+                backgroundColor: Theme.of(context).dividerColor.withAlpha((0.2 * 255).round()),
                 color: Theme.of(context).primaryColor,
               ),
               const SizedBox(height: 4),
@@ -120,17 +120,17 @@ class HabitCard extends StatelessWidget {
   String _getStageLabel(BuildContext context) {
     switch (habit.stage) {
       case HabitStage.hours24:
-        return AppLocalizations.of(context).stageHours24;
+        return '24 Hours';
       case HabitStage.days3:
-        return AppLocalizations.of(context).stageDays3;
+        return '3 Days';
       case HabitStage.week1:
-        return AppLocalizations.of(context).stageWeek1;
+        return '1 Week';
       case HabitStage.month1:
-        return AppLocalizations.of(context).stageMonth1;
+        return '1 Month';
       case HabitStage.quarter1:
-        return AppLocalizations.of(context).stageQuarter1;
+        return '1 Quarter';
       case HabitStage.year1:
-        return AppLocalizations.of(context).stageYear1;
+        return '1 Year';
       default:
         return '';
     }

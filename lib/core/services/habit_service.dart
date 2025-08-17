@@ -92,7 +92,7 @@ class HabitService {
     
     // Calculate new stage dates
     final newStageStartDate = now;
-    final newStageEndDate = Habit._calculateStageEndDate(newStageStartDate, nextStage);
+    final newStageEndDate = Habit.calculateStageEndDate(newStageStartDate, nextStage);
     
     final updatedHabit = habit.copyWith(
       stage: nextStage,

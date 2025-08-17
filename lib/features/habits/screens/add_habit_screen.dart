@@ -72,7 +72,7 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
         description: _descriptionController.text,
         createdDate: DateTime.now(),
         startDate: _startDate!,
-        targetEndDate: Habit._calculateStageEndDate(_startDate!, _selectedStage),
+        targetEndDate: Habit.calculateStageEndDate(_startDate!, _selectedStage),
         stage: _selectedStage,
         currentStageStartDate: _startDate!,
       );
