@@ -18,7 +18,7 @@ class HabitListScreen extends ConsumerWidget {
         title: Text(AppLocalizations.of(context).myHabits),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => context.pop(),
         ),
         actions: [
           IconButton(
