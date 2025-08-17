@@ -1,17 +1,21 @@
 import 'package:hive/hive.dart';
+import 'package:logger/logger.dart';
 import 'package:habit_breaker_app/config/constants.dart';
 import 'package:habit_breaker_app/models/habit.dart';
 
 class StorageService {
+  static final Logger _logger = Logger();
+  static final StorageService _instance = StorageService._internal();
+  factory StorageService() => _instance;
+  StorageService._internal();
+
   Box? _habitsBox;
-  Box? _recordsBox;
   Box? _settingsBox;
 
   // Initialize Hive boxes
   Future<void> init() async {
     // Initialize boxes for different data types
     _habitsBox = await Hive.openBox(AppConstants.habitsBox);
-    _recordsBox = await Hive.openBox(AppConstants.recordsBox);
     _settingsBox = await Hive.openBox(AppConstants.settingsBox);
   }
 
@@ -28,7 +32,7 @@ class StorageService {
           habits.add(habit);
         } catch (e) {
           // Handle any deserialization errors
-          print('Error deserializing habit: $e');
+          _logger.e('Error deserializing habit: $e');
         }
       }
     }
@@ -45,7 +49,7 @@ class StorageService {
         return Habit.fromJson({...habitData, 'id': id});
       } catch (e) {
         // Handle any deserialization errors
-        print('Error deserializing habit: $e');
+        _logger.e('Error deserializing habit: $e');
         return null;
       }
     }

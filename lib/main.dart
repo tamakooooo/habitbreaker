@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:workmanager/workmanager.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:habit_breaker_app/core/router/app_router.dart';
@@ -33,7 +32,6 @@ void main() async {
   // Initialize background task service
   await Workmanager().initialize(
     callbackDispatcher,
-    isInDebugMode: false,
   );
   
   // Register periodic tasks
@@ -52,14 +50,14 @@ void main() async {
   );
   
   runApp(
-    ProviderScope(
+    const ProviderScope(
       child: MyApp(),
     ),
   );
 }
 
 class MyApp extends ConsumerWidget {
-  MyApp({super.key});
+  const MyApp({super.key});
 
   // This widget is the root of your application.
   @override

@@ -23,8 +23,8 @@ class StatisticsScreen extends ConsumerWidget {
       body: habitsAsync.when(
         data: (habits) {
           if (habits.isEmpty) {
-            return const Center(
-              child: Text('No habits to show statistics for.'),
+            return Center(
+              child: Text(AppLocalizations.of(context).noHabitsYet),
             );
           }
 
@@ -96,7 +96,7 @@ class StatisticsScreen extends ConsumerWidget {
                 const SizedBox(height: 16),
                 SizedBox(
                   height: 200,
-                  child: LineChartSample1(),
+                  child: const LineChartSample1(),
                 ),
               ],
             ),
@@ -143,6 +143,8 @@ class StatCard extends StatelessWidget {
 }
 
 class LineChartSample1 extends StatelessWidget {
+  const LineChartSample1({super.key});
+
   @override
   Widget build(BuildContext context) {
     return LineChart(
@@ -150,19 +152,19 @@ class LineChartSample1 extends StatelessWidget {
         lineBarsData: [
           LineChartBarData(
             spots: [
-              FlSpot(0, 1),
-              FlSpot(1, 3),
-              FlSpot(2, 2),
-              FlSpot(3, 5),
-              FlSpot(4, 4),
-              FlSpot(5, 6),
-              FlSpot(6, 5),
+              const FlSpot(0, 1),
+              const FlSpot(1, 3),
+              const FlSpot(2, 2),
+              const FlSpot(3, 5),
+              const FlSpot(4, 4),
+              const FlSpot(5, 6),
+              const FlSpot(6, 5),
             ],
             isCurved: true,
             color: Theme.of(context).primaryColor,
             barWidth: 4,
             isStrokeCapRound: true,
-            dotData: FlDotData(show: false),
+            dotData: const FlDotData(show: false),
             belowBarData: BarAreaData(show: true),
           ),
         ],
@@ -182,7 +184,7 @@ class LineChartSample1 extends StatelessWidget {
             ),
           ),
         ),
-        gridData: FlGridData(
+        gridData: const FlGridData(
           show: true,
           drawVerticalLine: true,
         ),

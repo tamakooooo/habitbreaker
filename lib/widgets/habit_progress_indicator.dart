@@ -24,7 +24,7 @@ class HabitProgressIndicator extends StatelessWidget {
           CircularProgressIndicator(
             value: 1.0,
             strokeWidth: 8,
-            backgroundColor: Theme.of(context).dividerColor.withOpacity(0.2),
+            backgroundColor: Theme.of(context).dividerColor.withValues(alpha: 0.2),
             color: Colors.transparent,
           ),
           // Progress circle

@@ -86,7 +86,7 @@ class _CountdownTimerState extends State<CountdownTimer> {
             const SizedBox(height: 16),
             LinearProgressIndicator(
               value: _calculateProgress(),
-              backgroundColor: Theme.of(context).dividerColor.withOpacity(0.2),
+              backgroundColor: Theme.of(context).dividerColor.withValues(alpha: 0.2),
               color: Theme.of(context).primaryColor,
             ),
             const SizedBox(height: 8),

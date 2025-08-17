@@ -5,7 +5,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:habit_breaker_app/features/statistics/screens/statistics_screen.dart';
 import 'package:habit_breaker_app/models/habit.dart';
 import 'package:habit_breaker_app/core/providers/habit_providers.dart';
-import 'package:habit_breaker_app/localization/app_localizations.dart';
 import 'package:habit_breaker_app/localization/app_localizations_delegate.dart';
 
 // Mock habit data
@@ -35,28 +34,25 @@ final mockHabits = [
 void main() {
   testWidgets('Statistics screen displays habit statistics', (WidgetTester tester) async {
     // Mock the habits provider
-    final container = ProviderContainer(
-      overrides: [
-        habitsProvider.overrideWith((ref) async => mockHabits),
-      ],
-    );
 
     await tester.pumpWidget(
       ProviderScope(
-        parent: container,
-        child: MaterialApp(
-          home: const StatisticsScreen(),
-          localizationsDelegates: const [
+        overrides: [
+          habitsProvider.overrideWith((ref) async => mockHabits),
+        ],
+        child: const MaterialApp(
+          home: StatisticsScreen(),
+          localizationsDelegates: [
             AppLocalizationsDelegate(),
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [
+          supportedLocales: [
             Locale('en'),
             Locale('zh'),
           ],
-          locale: const Locale('zh'),
+          locale: Locale('zh'),
         ),
       ),
     );
@@ -73,28 +69,25 @@ void main() {
 
   testWidgets('Statistics screen shows empty state', (WidgetTester tester) async {
     // Mock the habits provider with empty list
-    final container = ProviderContainer(
-      overrides: [
-        habitsProvider.overrideWith((ref) async => []),
-      ],
-    );
 
     await tester.pumpWidget(
       ProviderScope(
-        parent: container,
-        child: MaterialApp(
-          home: const StatisticsScreen(),
-          localizationsDelegates: const [
+        overrides: [
+          habitsProvider.overrideWith((ref) async => mockHabits),
+        ],
+        child: const MaterialApp(
+          home: StatisticsScreen(),
+          localizationsDelegates: [
             AppLocalizationsDelegate(),
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [
+          supportedLocales: [
             Locale('en'),
             Locale('zh'),
           ],
-          locale: const Locale('zh'),
+          locale: Locale('zh'),
         ),
       ),
     );
@@ -103,6 +96,6 @@ void main() {
     await tester.pumpAndSettle();
 
     // Verify that empty state message is displayed
-    expect(find.text('No habits to show statistics for.'), findsOneWidget);
+    expect(find.text('No habits yet. Add your first habit!'), findsOneWidget);
   });
 }

@@ -2,23 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:habit_breaker_app/core/providers/habit_providers.dart';
-import 'package:habit_breaker_app/models/habit.dart';
 import 'package:habit_breaker_app/localization/app_localizations.dart';
 import 'package:habit_breaker_app/widgets/habit_card.dart';
 import 'package:habit_breaker_app/widgets/streak_counter.dart';
 
 class HabitListScreen extends ConsumerWidget {
   const HabitListScreen({super.key});
-
-  bool _isCompletedToday(Habit habit) {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    
-    return habit.completionDates.any((date) {
-      final completionDate = DateTime(date.year, date.month, date.day);
-      return completionDate.isAtSameMomentAs(today);
-    });
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

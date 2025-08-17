@@ -57,7 +57,7 @@ class HabitCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor.withOpacity(0.1),
+                      color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Column(
@@ -86,7 +86,7 @@ class HabitCard extends StatelessWidget {
               // Progress bar
               LinearProgressIndicator(
                 value: _calculateProgress(),
-                backgroundColor: Theme.of(context).dividerColor.withOpacity(0.2),
+                backgroundColor: Theme.of(context).dividerColor.withValues(alpha: 0.2),
                 color: Theme.of(context).primaryColor,
               ),
               const SizedBox(height: 4),

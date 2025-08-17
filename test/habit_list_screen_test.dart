@@ -5,7 +5,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:habit_breaker_app/features/habits/screens/habit_list_screen.dart';
 import 'package:habit_breaker_app/models/habit.dart';
 import 'package:habit_breaker_app/core/providers/habit_providers.dart';
-import 'package:habit_breaker_app/localization/app_localizations.dart';
 import 'package:habit_breaker_app/localization/app_localizations_delegate.dart';
 
 // Mock habit data
@@ -33,28 +32,25 @@ final mockHabits = [
 void main() {
   testWidgets('Habit list screen displays habits', (WidgetTester tester) async {
     // Mock the habits provider
-    final container = ProviderContainer(
-      overrides: [
-        habitsProvider.overrideWith((ref) async => mockHabits),
-      ],
-    );
 
     await tester.pumpWidget(
       ProviderScope(
-        parent: container,
-        child: MaterialApp(
-          home: const HabitListScreen(),
-          localizationsDelegates: const [
+        overrides: [
+          habitsProvider.overrideWith((ref) async => mockHabits),
+        ],
+        child: const MaterialApp(
+          home: HabitListScreen(),
+          localizationsDelegates: [
             AppLocalizationsDelegate(),
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [
+          supportedLocales: [
             Locale('en'),
             Locale('zh'),
           ],
-          locale: const Locale('zh'),
+          locale: Locale('zh'),
         ),
       ),
     );
@@ -69,28 +65,25 @@ void main() {
 
   testWidgets('Habit list screen shows empty state', (WidgetTester tester) async {
     // Mock the habits provider with empty list
-    final container = ProviderContainer(
-      overrides: [
-        habitsProvider.overrideWith((ref) async => []),
-      ],
-    );
 
     await tester.pumpWidget(
       ProviderScope(
-        parent: container,
-        child: MaterialApp(
-          home: const HabitListScreen(),
-          localizationsDelegates: const [
+        overrides: [
+          habitsProvider.overrideWith((ref) async => mockHabits),
+        ],
+        child: const MaterialApp(
+          home: HabitListScreen(),
+          localizationsDelegates: [
             AppLocalizationsDelegate(),
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [
+          supportedLocales: [
             Locale('en'),
             Locale('zh'),
           ],
-          locale: const Locale('zh'),
+          locale: Locale('zh'),
         ),
       ),
     );
@@ -99,6 +92,6 @@ void main() {
     await tester.pumpAndSettle();
 
     // Verify that empty state message is displayed
-    expect(find.text('还没有习惯。添加你的第一个习惯！'), findsOneWidget);
+    expect(find.text('No habits yet. Add your first habit!'), findsOneWidget);
   });
 }

@@ -4,7 +4,6 @@ import 'package:habit_breaker_app/core/providers/habit_providers.dart';
 import 'package:habit_breaker_app/models/habit.dart';
 import 'package:habit_breaker_app/localization/app_localizations.dart';
 import 'package:habit_breaker_app/widgets/countdown_timer.dart';
-import 'dart:async';
 
 class HabitDetailScreen extends ConsumerWidget {
   final String habitId;

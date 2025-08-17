@@ -26,9 +26,10 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
     super.dispose();
   }
 
-  void _saveHabit(WidgetRef ref) {
+  Future<void> _saveHabit(WidgetRef ref) async {
     if (_formKey.currentState!.validate()) {
       if (_startDate == null) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Please select a start date')),
         );
@@ -36,6 +37,7 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
       }
       
       if (_targetEndDate == null) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Please select a target end date')),
         );
@@ -53,18 +55,22 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
 
       // Save habit using provider
       final habitService = ref.read(habitServiceProvider);
-      habitService.createHabit(habit).then((_) {
+      try {
+        await habitService.createHabit(habit);
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Habit added successfully!')),
         );
         
         // Navigate back to the habit list
+        if (!mounted) return;
         context.pop();
-      }).catchError((error) {
+      } catch (error) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error saving habit: $error')),
         );
-      });
+      }
     }
   }
 

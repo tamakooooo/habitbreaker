@@ -1,6 +1,4 @@
 import 'package:go_router/go_router.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:habit_breaker_app/screens/home_screen.dart';
 import 'package:habit_breaker_app/features/auth/screens/login_screen.dart';
 import 'package:habit_breaker_app/features/auth/screens/signup_screen.dart';
