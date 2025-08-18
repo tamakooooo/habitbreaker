@@ -18,7 +18,10 @@ class HabitListScreen extends ConsumerWidget {
         title: Text(AppLocalizations.of(context).myHabits),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.pop(),
+          onPressed: () {
+            // 使用go方法返回主页，避免pop可能导致的黑屏问题
+            context.go('/');
+          },
         ),
         actions: [
           IconButton(
