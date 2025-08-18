@@ -21,7 +21,7 @@ jobs:
     - name: 环境锁定验证
       id: env-lock
       run: |
-        echo "flutter-version=$(grep '"flutter"' .fvmrc | sed 's/.*"flutter": "\(.*\)".*/\1/')" >> $GITHUB_OUTPUT
+        echo "flutter-version=$(grep \"flutter\" .fvmrc | sed 's/.*\"flutter\": \"\(.*\)\".*/\1/')" >> $GITHUB_OUTPUT
     - name: 生成缓存校验值
       id: cache-checksums
       run: |
