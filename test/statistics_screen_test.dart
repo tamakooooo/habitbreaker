@@ -61,7 +61,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Verify that statistics are displayed
-    expect(find.text('总习惯数'), findsWidgets); // Total habits title
+    expect(find.text('总戒断数'), findsWidgets); // Total habits title
     expect(find.text('已完成'), findsWidgets); // Completed title
     expect(find.text('总连续天数'), findsWidgets); // Total streaks title
     expect(find.text('平均连续天数'), findsWidgets); // Average streak title
@@ -96,6 +96,6 @@ void main() {
     await tester.pumpAndSettle();
 
     // Verify that empty state message is displayed
-    expect(find.text('还没有习惯。添加你的第一个习惯！'), findsOneWidget);
+    expect(find.text('还没有戒断。添加你的第一个戒断！'), findsOneWidget);
   });
 }

@@ -56,7 +56,7 @@ void main() {
     );
 
     // 使用正确的本地化字符串
-    expect(find.text('查看我的习惯'), findsOneWidget);
+    expect(find.text('查看我的戒断'), findsOneWidget);
     expect(find.text('查看统计'), findsOneWidget);
   });
 }

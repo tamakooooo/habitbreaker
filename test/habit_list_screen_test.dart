@@ -92,6 +92,6 @@ void main() {
     await tester.pumpAndSettle();
 
     // Verify that empty state message is displayed
-    expect(find.text('还没有习惯。添加你的第一个习惯！'), findsOneWidget);
+    expect(find.text('还没有戒断。添加你的第一个戒断！'), findsOneWidget);
   });
 }
