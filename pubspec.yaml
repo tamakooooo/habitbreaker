@@ -43,7 +43,7 @@ dependencies:
   shared_preferences: ^2.2.0
   
   # Internationalization - Flutter 3.24.0兼容性
-  intl: ^0.20.2
+  intl: ^0.19.0
   flutter_localizations:
     sdk: flutter
   
