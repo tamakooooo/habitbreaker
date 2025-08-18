@@ -86,9 +86,9 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
           const SnackBar(content: Text('Habit added successfully!')),
         );
         
-        // Navigate back to the habit list
+        // Navigate back to the home page
         if (!mounted) return;
-        context.pop();
+        context.go('/');
       } catch (error) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
