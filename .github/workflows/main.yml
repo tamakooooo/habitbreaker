@@ -1,4 +1,4 @@
-name: Flutter CI/CD - 零差异构建系统
+name: Flutter CI/CD - Zero Difference Build System
 
 on:
   push:
@@ -7,9 +7,10 @@ on:
     branches: [ main, develop ]
 
 env:
-  FLUTTER_VERSION: '3.24.0'
+  FLUTTER_VERSION: '3.35.1'
   JAVA_VERSION: '17'
   GRADLE_VERSION: '8.1.1'
+
 jobs:
   env-lock:
     runs-on: ubuntu-latest
@@ -17,107 +18,106 @@ jobs:
       flutter-version: ${{ steps.env-lock.outputs.flutter-version }}
       checksums: ${{ steps.cache-checksums.outputs.checksums }}
     steps:
-    - uses: actions/checkout@v4
-    - name: 环境锁定验证
-      id: env-lock
-      run: |
-        echo "flutter-version=$(grep \"flutter\" .fvmrc | sed 's/.*\"flutter\": \"\(.*\)\".*/\1/')" >> $GITHUB_OUTPUT
-    - name: 生成缓存校验值
-      id: cache-checksums
-      run: |
-        echo "checksums=${{ hashFiles('**/*.lock', '**/pubspec.yaml', 'android/**/*.gradle*', '**/gradle-wrapper.properties') }}" >> $GITHUB_OUTPUT
+      - uses: actions/checkout@v4
+      - name: Environment lock verification
+        id: env-lock
+        run: |
+          echo "flutter-version=$(grep "flutter" .fvmrc | sed 's/.*"flutter": "\(.*\)".*/\1/')" >> $GITHUB_OUTPUT
+      - name: Generate cache checksums
+        id: cache-checksums
+        run: |
+          echo "checksums=${{ hashFiles('**/*.lock', '**/pubspec.yaml', 'android/**/*.gradle*', '**/gradle-wrapper.properties') }}" >> $GITHUB_OUTPUT
 
   test:
     needs: env-lock
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: 设置Flutter环境
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: ${{ needs.env-lock.outputs.flutter-version }}
-        cache: true
-        cache-key: flutter-${{ needs.env-lock.outputs.flutter-version }}-${{ needs.env-lock.outputs.checksums }}
-    - name: 验证构建环境
-      run: ./scripts/validate_environment.sh || echo "⚠️ 跳过严格环境验证，使用CI默认环境"
-    - name: 缓存依赖
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.pub-cache
-          build/downloads
-        key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
-    - name: 安装依赖
-      run: flutter pub get
-    - name: 运行测试
-      run: flutter test --coverage --reporter github
+      - uses: actions/checkout@v4
+      - name: Setup Flutter environment
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+          cache-key: flutter-${{ env.FLUTTER_VERSION }}-${{ needs.env-lock.outputs.checksums }}
+      - name: Validate build environment
+        run: ./scripts/validate_environment.sh || echo "⚠️ Skipping strict environment validation, using CI default environment"
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            build/downloads
+          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Run tests
+        run: flutter test --coverage --reporter github
 
   build-android:
     needs: [env-lock, test]
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: 设置Flutter环境
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: ${{ needs.env-lock.outputs.flutter-version }}
-        cache: true
-        cache-key: flutter-${{ needs.env-lock.outputs.flutter-version }}-${{ needs.env-lock.outputs.checksums }}
-    - name: 设置Java环境
-      uses: actions/setup-java@v4
-      with:
-        java-version: ${{ env.JAVA_VERSION }}
-        distribution: 'temurin'
-    - name: 设置环境权限
-      run: |
-        chmod +x scripts/ci/*.sh || true
-        chmod +x scripts/validate_environment.sh || true
-    - name: 缓存Gradle和依赖
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.gradle/caches
-          ~/.gradle/wrapper
-          ~/.pub-cache
-          build/downloads
-        key: ${{ runner.os }}-gradle-v2-${{ hashFiles('**/gradle.lockfile') }}-${{ hashFiles('**/build.gradle*') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-v2-
-    - name: 验证构建环境
-      run: |
-        echo "GitHub Actions环境验证"
-        flutter --version
-        java -version || echo "使用默认Java"
-    - name: 安装依赖
-      run: flutter pub get
-    - name: 设置签名密钥
-      uses: timheuer/base64-to-file@v1.2
-      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && github.secrets.KEYSTORE_BASE64 != '' }}
-      with:
-        fileName: 'upload-keystore.jks'
-        fileDir: 'android/app/'
-        encodedString: ${{ secrets.KEYSTORE_BASE64 }}
-    - name: 创建key.properties文件
-      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && github.secrets.KEYSTORE_BASE64 != '' }}
-      run: |
-        echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/key.properties
-        echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
-        echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
-        echo "storeFile=upload-keystore.jks" >> android/key.properties
-    - name: 构建APK
-      run: |
-        flutter build apk --release --build-number="${{ github.run_number }}"
-    - name: 上传APK构建产物
-      uses: actions/upload-artifact@v4
-      with:
-        name: android-apk-build
-        path: build/app/outputs/flutter-apk/*.apk
-    - name: 构建诊断和缓存清理
-      if: always()
-      run: |
-        flutter doctor -v || true
-        flutter clean || true
-
+      - uses: actions/checkout@v4
+      - name: Setup Flutter environment
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+          cache-key: flutter-${{ env.FLUTTER_VERSION }}-${{ needs.env-lock.outputs.checksums }}
+      - name: Setup Java environment
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+      - name: Set environment permissions
+        run: |
+          chmod +x scripts/ci/*.sh || true
+          chmod +x scripts/validate_environment.sh || true
+      - name: Cache Gradle and dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            ~/.pub-cache
+            build/downloads
+          key: ${{ runner.os }}-gradle-v2-${{ hashFiles('**/gradle.lockfile') }}-${{ hashFiles('**/build.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-v2-
+      - name: Validate build environment
+        run: |
+          echo "GitHub Actions environment validation"
+          flutter --version
+          java -version || echo "Using default Java"
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Setup signing keys
+        uses: timheuer/base64-to-file@v1.2
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && env.KEYSTORE_BASE64 != ''
+        with:
+          fileName: 'upload-keystore.jks'
+          fileDir: 'android/app/'
+          encodedString: ${{ secrets.KEYSTORE_BASE64 }}
+      - name: Create key.properties file
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && env.KEYSTORE_BASE64 != ''
+        run: |
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/key.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
+          echo "storeFile=upload-keystore.jks" >> android/key.properties
+      - name: Build APK
+        run: |
+          flutter build apk --release --build-number="${{ github.run_number }}"
+      - name: Upload APK build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk-build
+          path: build/app/outputs/flutter-apk/*.apk
+      - name: Build diagnostics and cache cleanup
+        if: always()
+        run: |
+          flutter doctor -v || true
+          flutter clean || true
 
   release:
     needs: build-android
@@ -127,17 +127,17 @@ jobs:
       contents: write
       actions: read
     steps:
-    - name: Download APK artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: android-apk-build
-        path: ./
-    - name: Create Release
-      uses: softprops/action-gh-release@v2
-      with:
-        tag_name: v${{ github.run_number }}
-        name: Release v${{ github.run_number }}
-        files: app-release.apk
-        draft: false
-        prerelease: false
-        token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Download APK artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: android-apk-build
+          path: ./
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.run_number }}
+          name: Release v${{ github.run_number }}
+          files: app-release.apk
+          draft: false
+          prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
