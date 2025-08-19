@@ -42,7 +42,7 @@ dependencies:
   flutter_secure_storage: ^8.0.0
   shared_preferences: ^2.2.0
   
-  # Internationalization - Flutter 3.24.0兼容性
+  # Internationalization - Flutter 3.35.1兼容性
   intl: ^0.20.2
   flutter_localizations:
     sdk: flutter
