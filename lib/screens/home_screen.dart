@@ -51,8 +51,22 @@ class HomeScreen extends ConsumerWidget {
       ),
       bottomNavigationBar: BottomAppBar(
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
+            TextButton(
+              onPressed: () {
+                // Navigate to habit list
+                context.push('/habits');
+              },
+              child: const Text('查看我的戒断'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Navigate to statistics
+                context.push('/statistics');
+              },
+              child: const Text('查看统计'),
+            ),
             IconButton(
               icon: const Icon(Icons.settings),
               onPressed: () {
