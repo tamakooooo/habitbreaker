@@ -52,6 +52,8 @@ class AppLocalizations {
       'stage_1_month': '1 Month',
       'stage_1_quarter': '1 Quarter',
       'stage_1_year': '1 Year',
+      'icon': 'Icon',
+      'select_icon': 'Select Icon',
     },
     'zh': {
       'app_name': '戒断不良习惯',
@@ -95,6 +97,8 @@ class AppLocalizations {
       'stage_1_month': '1个月',
       'stage_1_quarter': '1个季度',
       'stage_1_year': '1年',
+      'icon': '图标',
+      'select_icon': '选择图标',
     },
   };
 
@@ -139,4 +143,6 @@ class AppLocalizations {
   String get stage1Month => _localizedValues[locale.languageCode]?['stage_1_month'] ?? '1 Month';
   String get stage1Quarter => _localizedValues[locale.languageCode]?['stage_1_quarter'] ?? '1 Quarter';
   String get stage1Year => _localizedValues[locale.languageCode]?['stage_1_year'] ?? '1 Year';
+  String get icon => _localizedValues[locale.languageCode]?['icon'] ?? 'Icon';
+  String get selectIcon => _localizedValues[locale.languageCode]?['select_icon'] ?? 'Select Icon';
 }

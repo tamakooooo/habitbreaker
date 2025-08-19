@@ -57,6 +57,9 @@ class Habit extends Equatable {
   
   @HiveField(11)
   final DateTime currentStageEndDate;
+  
+  @HiveField(12)
+  final String icon;
 
   Habit({
     required this.id,
@@ -71,6 +74,7 @@ class Habit extends Equatable {
     this.stage = HabitStage.hours24,
     DateTime? currentStageStartDate,
     DateTime? currentStageEndDate,
+    this.icon = 'default_icon',
   }) : completionDates = completionDates ?? [],
        currentStageStartDate = currentStageStartDate ?? startDate,
        currentStageEndDate = currentStageEndDate ?? calculateStageEndDate(startDate, HabitStage.hours24);
@@ -88,6 +92,7 @@ class Habit extends Equatable {
     HabitStage? stage,
     DateTime? currentStageStartDate,
     DateTime? currentStageEndDate,
+    String? icon,
   }) {
     return Habit(
       id: id ?? this.id,
@@ -102,6 +107,7 @@ class Habit extends Equatable {
       stage: stage ?? this.stage,
       currentStageStartDate: currentStageStartDate ?? this.currentStageStartDate,
       currentStageEndDate: currentStageEndDate ?? this.currentStageEndDate,
+      icon: icon ?? this.icon,
     );
   }
 
@@ -140,5 +146,6 @@ class Habit extends Equatable {
         stage,
         currentStageStartDate,
         currentStageEndDate,
+        icon,
       ];
 }

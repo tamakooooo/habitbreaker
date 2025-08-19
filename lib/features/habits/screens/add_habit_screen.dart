@@ -4,6 +4,7 @@ import 'package:habit_breaker_app/models/habit.dart';
 import 'package:habit_breaker_app/core/providers/habit_providers.dart';
 import 'package:habit_breaker_app/localization/app_localizations.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class AddHabitScreen extends ConsumerStatefulWidget {
   const AddHabitScreen({super.key});
@@ -18,6 +19,7 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
   final _descriptionController = TextEditingController();
   DateTime? _startDate;
   HabitStage _selectedStage = HabitStage.hours24;
+  String _selectedIcon = 'default_icon';
 
   @override
   void dispose() {
@@ -56,6 +58,48 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
     );
   }
 
+  Future<String?> _selectIcon(BuildContext context) async {
+    final selectedIcon = await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(AppLocalizations.of(context).selectIcon),
+          content: SizedBox(
+            width: 300,
+            height: 400,
+            child: GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 4,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+              ),
+              itemCount: 20, // Show first 20 icons as an example
+              itemBuilder: (BuildContext context, int index) {
+                // Example icons - in a real app, you might want to show more icons
+                final icons = [
+                  'alarm', 'android', 'apple', 'beer', 'book', 'camera', 'car', 'coffee',
+                  'cog', 'computer', 'diamond', 'dog', 'email', 'facebook', 'gamepad', 'github',
+                  'heart', 'home', 'instagram', 'lightbulb'
+                ];
+                
+                final iconData = MdiIcons.fromString(icons[index]);
+                
+                return IconButton(
+                  icon: Icon(iconData),
+                  onPressed: () {
+                    Navigator.of(context).pop(icons[index]);
+                  },
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+    
+    return selectedIcon;
+  }
+
   Future<void> _saveHabit(WidgetRef ref) async {
     if (_formKey.currentState!.validate()) {
       if (_startDate == null) {
@@ -75,6 +119,7 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
         targetEndDate: Habit.calculateStageEndDate(_startDate!, _selectedStage),
         stage: _selectedStage,
         currentStageStartDate: _startDate!,
+        icon: _selectedIcon,
       );
 
       // Save habit using provider
@@ -132,9 +177,7 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
                   border: const OutlineInputBorder(),
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a habit name';
-                  }
+                  // Description is optional
                   return null;
                 },
               ),
@@ -146,11 +189,19 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
                   border: const OutlineInputBorder(),
                 ),
                 maxLines: 3,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a description';
+              ),
+              const SizedBox(height: 16),
+              ListTile(
+                title: Text(AppLocalizations.of(context).icon),
+                subtitle: Text(_selectedIcon),
+                trailing: Icon(_selectedIcon == 'default_icon' ? Icons.star : MdiIcons.fromString(_selectedIcon)),
+                onTap: () async {
+                  final selectedIcon = await _selectIcon(context);
+                  if (selectedIcon != null) {
+                    setState(() {
+                      _selectedIcon = selectedIcon;
+                    });
                   }
-                  return null;
                 },
               ),
               const SizedBox(height: 16),
