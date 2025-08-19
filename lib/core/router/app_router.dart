@@ -8,6 +8,7 @@ import 'package:habit_breaker_app/features/habits/screens/habit_detail_screen.da
 import 'package:habit_breaker_app/features/statistics/screens/statistics_screen.dart';
 import 'package:habit_breaker_app/features/statistics/screens/test_chart_screen.dart';
 import 'package:habit_breaker_app/features/settings/screens/settings_screen.dart';
+import 'package:habit_breaker_app/screens/icon_demo_screen.dart';
 
 final router = GoRouter(
   routes: [
@@ -49,6 +50,10 @@ final router = GoRouter(
     GoRoute(
       path: '/settings',
       builder: (context, state) => const SettingsScreen(),
+    ),
+    GoRoute(
+      path: '/icon-demo',
+      builder: (context, state) => const IconDemoScreen(),
     ),
   ],
 );

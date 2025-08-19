@@ -29,13 +29,14 @@ class HabitAdapter extends TypeAdapter<Habit> {
       stage: fields[9] as HabitStage,
       currentStageStartDate: fields[10] as DateTime?,
       currentStageEndDate: fields[11] as DateTime?,
+      icon: fields[12] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, Habit obj) {
     writer
-      ..writeByte(12)
+      ..writeByte(13)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -59,7 +60,9 @@ class HabitAdapter extends TypeAdapter<Habit> {
       ..writeByte(10)
       ..write(obj.currentStageStartDate)
       ..writeByte(11)
-      ..write(obj.currentStageEndDate);
+      ..write(obj.currentStageEndDate)
+      ..writeByte(12)
+      ..write(obj.icon);
   }
 
   @override
@@ -97,6 +100,7 @@ Habit _$HabitFromJson(Map<String, dynamic> json) => Habit(
       currentStageEndDate: json['currentStageEndDate'] == null
           ? null
           : DateTime.parse(json['currentStageEndDate'] as String),
+      icon: json['icon'] as String? ?? 'default_icon',
     );
 
 Map<String, dynamic> _$HabitToJson(Habit instance) => <String, dynamic>{
@@ -113,6 +117,7 @@ Map<String, dynamic> _$HabitToJson(Habit instance) => <String, dynamic>{
       'stage': _$HabitStageEnumMap[instance.stage]!,
       'currentStageStartDate': instance.currentStageStartDate.toIso8601String(),
       'currentStageEndDate': instance.currentStageEndDate.toIso8601String(),
+      'icon': instance.icon,
     };
 
 const _$HabitStageEnumMap = {
