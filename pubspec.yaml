@@ -43,11 +43,8 @@ dependencies:
   shared_preferences: ^2.2.0
   
   # Internationalization - Flutter 3.35.1兼容性
-  intl: ^0.20.2
   flutter_localizations:
-    sdk: flutter
-  
-  # Utilities
+    sdk: flutter # Utilities
   logger: ^2.0.2
   equatable: ^2.0.5
   json_annotation: ^4.8.1
