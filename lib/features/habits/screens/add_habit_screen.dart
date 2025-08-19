@@ -81,6 +81,10 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
       final habitService = ref.read(habitServiceProvider);
       try {
         await habitService.createHabit(habit);
+        
+        // Invalidate habits provider to refresh the list
+        ref.invalidate(habitsProvider);
+        
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Habit added successfully!')),
