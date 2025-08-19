@@ -5,11 +5,16 @@ import 'package:habit_breaker_app/core/providers/habit_providers.dart';
 import 'package:habit_breaker_app/localization/app_localizations.dart';
 import 'package:habit_breaker_app/widgets/habit_progress_indicator.dart';
 
-class StatisticsScreen extends ConsumerWidget {
+class StatisticsScreen extends ConsumerStatefulWidget {
   const StatisticsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<StatisticsScreen> createState() => _StatisticsScreenState();
+}
+
+class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
+  @override
+  Widget build(BuildContext context) {
     final habitsAsync = ref.watch(habitsProvider);
 
     return Scaffold(
@@ -96,7 +101,7 @@ class StatisticsScreen extends ConsumerWidget {
                 const SizedBox(height: 16),
                 SizedBox(
                   height: 200,
-                  child: const LineChartSample1(),
+                  child: LineChartSample1(),
                 ),
               ],
             ),
@@ -142,8 +147,30 @@ class StatCard extends StatelessWidget {
   }
 }
 
-class LineChartSample1 extends StatelessWidget {
+class LineChartSample1 extends StatefulWidget {
   const LineChartSample1({super.key});
+
+  @override
+  State<LineChartSample1> createState() => _LineChartSample1State();
+}
+
+class _LineChartSample1State extends State<LineChartSample1> {
+  late final List<FlSpot> chartData;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize chart data
+    chartData = [
+      const FlSpot(0, 1),
+      const FlSpot(1, 3),
+      const FlSpot(2, 2),
+      const FlSpot(3, 5),
+      const FlSpot(4, 4),
+      const FlSpot(5, 6),
+      const FlSpot(6, 5),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -151,15 +178,7 @@ class LineChartSample1 extends StatelessWidget {
       LineChartData(
         lineBarsData: [
           LineChartBarData(
-            spots: [
-              const FlSpot(0, 1),
-              const FlSpot(1, 3),
-              const FlSpot(2, 2),
-              const FlSpot(3, 5),
-              const FlSpot(4, 4),
-              const FlSpot(5, 6),
-              const FlSpot(6, 5),
-            ],
+            spots: chartData,
             isCurved: true,
             color: Theme.of(context).primaryColor,
             barWidth: 4,
@@ -230,8 +249,8 @@ class LineChartSample1 extends StatelessWidget {
     }
 
     return SideTitleWidget(
-      axisSide: meta.axisSide,
       child: text,
+      meta: meta,
     );
   }
 

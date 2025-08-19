@@ -36,7 +36,7 @@ test/
 - Navigation: go_router ^14.2.3
 - UI & Screen Adaptation: flutter_screenutil ^5.9.0
 - Network: dio ^5.4.0
-- Charts: fl_chart ^0.63.0
+- Charts: fl_chart ^1.0.0
 - Notifications: flutter_local_notifications ^19.4.0
 - Background Tasks: workmanager ^0.7.0
 - Storage: flutter_secure_storage ^8.0.0, shared_preferences ^2.2.0

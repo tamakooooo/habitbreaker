@@ -31,7 +31,7 @@ dependencies:
   dio: ^5.4.0
   
   # Charts & Data Visualization
-  fl_chart: ^0.63.0
+  fl_chart: ^1.0.0
   
   # Notifications & Background Tasks
   flutter_local_notifications: ^19.4.0

@@ -43,6 +43,13 @@ class HomeScreen extends ConsumerWidget {
               },
               child: Text(AppLocalizations.of(context).viewStatistics),
             ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                context.go('/test-chart');
+              },
+              child: const Text('Test Chart'),
+            ),
           ],
         ),
       ),
