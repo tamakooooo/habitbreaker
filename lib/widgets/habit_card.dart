@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:habit_breaker_app/models/habit.dart';
 import 'package:habit_breaker_app/localization/app_localizations.dart';
 
-class HabitCard extends StatelessWidget {
+class HabitCard extends StatefulWidget {
   final Habit habit;
   final VoidCallback onTap;
   final VoidCallback onCheck;
@@ -15,134 +17,105 @@ class HabitCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final daysRemaining = habit.targetEndDate.difference(DateTime.now()).inDays;
+  State<HabitCard> createState() => _HabitCardState();
+}
+
+class _HabitCardState extends State<HabitCard> {
+  late DateTime _currentTime;
+  late Duration _remainingTime;
+  late double _progress;
+  late int _daysRemaining;
+  late Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _updateTime();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        _updateTime();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  void _updateTime() {
+    _currentTime = DateTime.now();
+    _remainingTime = widget.habit.targetEndDate.difference(_currentTime);
+    _daysRemaining = _remainingTime.inDays;
     
+    final totalDuration = widget.habit.targetEndDate.difference(widget.habit.startDate);
+    final elapsedDuration = _currentTime.difference(widget.habit.startDate);
+    
+    if (elapsedDuration.isNegative) {
+      _progress = 0.0;
+    } else if (elapsedDuration >= totalDuration) {
+      _progress = 1.0;
+    } else {
+      _progress = elapsedDuration.inSeconds / totalDuration.inSeconds;
+    }
+  }
+
+  String _formatTime(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final days = duration.inDays;
+    final hours = duration.inHours % 24;
+    final minutes = duration.inMinutes % 60;
+    final seconds = duration.inSeconds % 60;
+    
+    return '${twoDigits(days)}:${twoDigits(hours)}:${twoDigits(minutes)}:${twoDigits(seconds)}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
       child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        onTap: widget.onTap,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
-                children: [
-                  // Habit info
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          habit.name,
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          habit.description,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: Theme.of(context).hintColor,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  // Days remaining
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor.withAlpha((0.1 * 255).round()),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                          '$daysRemaining',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                            color: Colors.blue,
-                          ),
-                        ),
-                        Text(
-                          'days',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              // Progress bar
-              LinearProgressIndicator(
-                value: _calculateProgress(),
-                backgroundColor: Theme.of(context).dividerColor.withAlpha((0.2 * 255).round()),
-                color: Theme.of(context).primaryColor,
-              ),
-              const SizedBox(height: 4),
-              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    '${AppLocalizations.of(context).stage}: ${_getStageLabel(context)}',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey[600],
+                  Expanded(
+                    child: Text(
+                      widget.habit.name,
+                      style: Theme.of(context).textTheme.titleLarge,
                     ),
                   ),
-                  Text(
-                    'Days: ${(habit.currentStageEndDate.difference(DateTime.now()).inDays).toString()}',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey[600],
-                    ),
-                  ),
+                Text(
+                  '${AppLocalizations.of(context).timeRemaining}: ${_formatTime(_remainingTime)}',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
                 ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                widget.habit.description,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 12),
+              LinearProgressIndicator(
+                value: _progress,
+                minHeight: 8,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '${(_progress * 100).toStringAsFixed(1)}% ${AppLocalizations.of(context).completed}',
+                style: Theme.of(context).textTheme.bodySmall,
               ),
             ],
           ),
         ),
       ),
     );
-  }
-  
-  String _getStageLabel(BuildContext context) {
-    switch (habit.stage) {
-      case HabitStage.hours24:
-        return '24 Hours';
-      case HabitStage.days3:
-        return '3 Days';
-      case HabitStage.week1:
-        return '1 Week';
-      case HabitStage.month1:
-        return '1 Month';
-      case HabitStage.quarter1:
-        return '1 Quarter';
-      case HabitStage.year1:
-        return '1 Year';
-      default:
-        return '';
-    }
-  }
-
-  double _calculateProgress() {
-    final totalDuration = habit.currentStageEndDate.difference(habit.currentStageStartDate);
-    final elapsedDuration = DateTime.now().difference(habit.currentStageStartDate);
-    
-    if (totalDuration.inSeconds <= 0) return 1.0;
-    
-    final progress = elapsedDuration.inSeconds / totalDuration.inSeconds;
-    return progress.clamp(0.0, 1.0);
   }
 }
