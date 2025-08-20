@@ -38,12 +38,15 @@ class AppLocalizations {
       'habit_name': '戒断 Name',
       'description': 'Description',
       'start_date': 'Start Date',
+      'start_time': 'Start Time',
       'target_end_date': 'Target End Date',
       'not_selected': 'Not selected',
       'save': 'Save',
       'mark_completed_today': 'Mark as Completed Today',
       'days_remaining': 'Days Remaining',
       'time_remaining': 'Time Remaining',
+      'days_elapsed': 'Days Elapsed',
+      'time_elapsed': 'Time Elapsed',
       'stage': 'Stage',
       'select_stage': 'Select Stage',
       'stage_24_hours': '24 Hours',
@@ -83,12 +86,15 @@ class AppLocalizations {
       'habit_name': '戒断名称',
       'description': '描述',
       'start_date': '开始日期',
+      'start_time': '开始时间',
       'target_end_date': '目标结束日期',
       'not_selected': '未选择',
       'save': '保存',
       'mark_completed_today': '标记为今日完成',
       'days_remaining': '剩余天数',
       'time_remaining': '剩余时间',
+      'days_elapsed': '已戒断天数',
+      'time_elapsed': '已戒断时间',
       'stage': '阶段',
       'select_stage': '选择阶段',
       'stage_24_hours': '24小时',
@@ -145,4 +151,7 @@ class AppLocalizations {
   String get stage1Year => _localizedValues[locale.languageCode]?['stage_1_year'] ?? '1 Year';
   String get icon => _localizedValues[locale.languageCode]?['icon'] ?? 'Icon';
   String get selectIcon => _localizedValues[locale.languageCode]?['select_icon'] ?? 'Select Icon';
+  String get daysElapsed => _localizedValues[locale.languageCode]?['days_elapsed'] ?? 'Days Elapsed';
+  String get timeElapsed => _localizedValues[locale.languageCode]?['time_elapsed'] ?? 'Time Elapsed';
+  String get startTime => _localizedValues[locale.languageCode]?['start_time'] ?? 'Start Time';
 }

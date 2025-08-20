@@ -34,11 +34,8 @@ class _CountdownTimerState extends ConsumerState<CountdownTimer> {
 
   void _updateRemainingTime() {
     final now = DateTime.now();
-    if (_targetDate.isAfter(now)) {
-      _remainingTime = _targetDate.difference(now);
-    } else {
-      _remainingTime = Duration.zero;
-    }
+    // Calculate elapsed time since start date
+    _remainingTime = now.difference(widget.habit.startDate);
   }
   
   void _checkStageCompletion() {
@@ -93,7 +90,7 @@ class _CountdownTimerState extends ConsumerState<CountdownTimer> {
         child: Column(
           children: [
             Text(
-              '${AppLocalizations.of(context).timeRemaining} - ${_getStageLabel(widget.habit.stage)}',
+              '${AppLocalizations.of(context).timeElapsed} - ${_getStageLabel()}',
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 16),
@@ -126,7 +123,7 @@ class _CountdownTimerState extends ConsumerState<CountdownTimer> {
             ),
             const SizedBox(height: 8),
             Text(
-              '${AppLocalizations.of(context).daysRemaining}: $days',
+              '${AppLocalizations.of(context).daysElapsed}: $days',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ],
@@ -135,20 +132,31 @@ class _CountdownTimerState extends ConsumerState<CountdownTimer> {
     );
   }
   
-  String _getStageLabel(HabitStage stage) {
-    switch (stage) {
-      case HabitStage.hours24:
-        return AppLocalizations.of(context).stage24Hours;
-      case HabitStage.days3:
-        return AppLocalizations.of(context).stage3Days;
-      case HabitStage.week1:
-        return AppLocalizations.of(context).stage1Week;
-      case HabitStage.month1:
-        return AppLocalizations.of(context).stage1Month;
-      case HabitStage.quarter1:
-        return AppLocalizations.of(context).stage1Quarter;
-      case HabitStage.year1:
-        return AppLocalizations.of(context).stage1Year;
+  String _getStageLabel() {
+    final elapsedDays = _remainingTime.inDays;
+    
+    // 根据已用天数自动确定阶段
+    if (elapsedDays < 1) {
+      // 少于1天，显示小时
+      return AppLocalizations.of(context).stage24Hours;
+    } else if (elapsedDays < 3) {
+      // 少于3天
+      return AppLocalizations.of(context).stage3Days;
+    } else if (elapsedDays < 7) {
+      // 少于1周
+      return AppLocalizations.of(context).stage1Week;
+    } else if (elapsedDays < 30) {
+      // 少于1个月
+      return AppLocalizations.of(context).stage1Month;
+    } else if (elapsedDays < 90) {
+      // 少于1个季度
+      return AppLocalizations.of(context).stage1Quarter;
+    } else if (elapsedDays < 180) {
+      // 少于半年
+      return AppLocalizations.of(context).stage1Year; // 这里使用年作为半年的标签
+    } else {
+      // 180天及以上
+      return AppLocalizations.of(context).stage1Year;
     }
   }
 

@@ -71,6 +71,30 @@ class _HabitCardState extends State<HabitCard> {
     return '${twoDigits(days)}:${twoDigits(hours)}:${twoDigits(minutes)}:${twoDigits(seconds)}';
   }
 
+  String _getCurrentStageLabel() {
+    final elapsedDuration = _currentTime.difference(widget.habit.startDate);
+    final elapsedDays = elapsedDuration.inDays;
+
+    // Determine current stage based on abstinence duration
+    if (elapsedDays < 1) {
+      return AppLocalizations.of(context).stage24Hours;
+    } else if (elapsedDays < 3) {
+      return AppLocalizations.of(context).stage24Hours;
+    } else if (elapsedDays < 7) {
+      return AppLocalizations.of(context).stage3Days;
+    } else if (elapsedDays < 30) {
+      return AppLocalizations.of(context).stage1Week;
+    } else if (elapsedDays < 90) {
+      return AppLocalizations.of(context).stage1Month;
+    } else if (elapsedDays < 180) {
+      return AppLocalizations.of(context).stage1Quarter;
+    } else if (elapsedDays < 365) {
+      return AppLocalizations.of(context).stage1Year;
+    } else {
+      return AppLocalizations.of(context).stage1Year;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -110,6 +134,11 @@ class _HabitCardState extends State<HabitCard> {
               const SizedBox(height: 8),
               Text(
                 '${(_progress * 100).toStringAsFixed(1)}% ${AppLocalizations.of(context).completed}',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '${AppLocalizations.of(context).stage}: ${_getCurrentStageLabel()}',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ],

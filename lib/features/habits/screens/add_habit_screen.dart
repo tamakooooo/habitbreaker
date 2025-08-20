@@ -18,6 +18,7 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
   DateTime? _startDate;
+  TimeOfDay _startTime = const TimeOfDay(hour: 9, minute: 0); // Default start time
   HabitStage _selectedStage = HabitStage.hours24;
   String _selectedIcon = 'default_icon';
 
@@ -110,15 +111,24 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
         return;
       }
       
+      // Combine date and time
+      final startDateTime = DateTime(
+        _startDate!.year,
+        _startDate!.month,
+        _startDate!.day,
+        _startTime.hour,
+        _startTime.minute,
+      );
+      
       final habit = Habit(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         name: _nameController.text,
         description: _descriptionController.text,
         createdDate: DateTime.now(),
-        startDate: _startDate!,
-        targetEndDate: Habit.calculateStageEndDate(_startDate!, _selectedStage),
+        startDate: startDateTime,
+        targetEndDate: Habit.calculateStageEndDate(startDateTime, _selectedStage),
         stage: _selectedStage,
-        currentStageStartDate: _startDate!,
+        currentStageStartDate: startDateTime,
         icon: _selectedIcon,
       );
 
@@ -223,6 +233,25 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
                   if (date != null) {
                     setState(() {
                       _startDate = date;
+                    });
+                  }
+                },
+              ),
+              const SizedBox(height: 16),
+              ListTile(
+                title: Text(AppLocalizations.of(context).startTime),
+                subtitle: Text(
+                  '${_startTime.hour.toString().padLeft(2, '0')}:${_startTime.minute.toString().padLeft(2, '0')}',
+                ),
+                trailing: const Icon(Icons.access_time),
+                onTap: () async {
+                  final time = await showTimePicker(
+                    context: context,
+                    initialTime: _startTime,
+                  );
+                  if (time != null) {
+                    setState(() {
+                      _startTime = time;
                     });
                   }
                 },
