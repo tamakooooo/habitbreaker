@@ -172,25 +172,64 @@ class _HabitCardState extends State<HabitCard> {
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: 12),
-              LinearProgressIndicator(
-                value: _progress,
-                minHeight: 8,
+              // 美观的自定义进度条
+              Container(
+                height: 20,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Stack(
+                  children: [
+                    // 进度条背景
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    // 进度条前景
+                    FractionallySizedBox(
+                      alignment: Alignment.centerLeft,
+                      widthFactor: _progress > 1.0 ? 1.0 : _progress,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: _progress >= 1.0 
+                              ? Colors.green // 完成时显示绿色
+                              : Theme.of(context).primaryColor,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: _progress >= 1.0 
+                                  ? Colors.green.withValues(alpha: 0.5)
+                                  : Theme.of(context).primaryColor.withValues(alpha: 0.5),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 8),
-              Text(
-                '${(_progress * 100).toStringAsFixed(1)}% ${AppLocalizations.of(context).completed}',
-                style: Theme.of(context).textTheme.bodySmall,
+              // 进度文本
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '${(_progress * 100).toStringAsFixed(1)}% ${AppLocalizations.of(context).completed}',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  Text(
+                    '${widget.habit.startDate.toString().split(' ')[0]} - ${widget.habit.targetEndDate.toString().split(' ')[0]}',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 16),
-              LinearProgressIndicator(
-                value: _progress,
-                minHeight: 8,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                '${(_progress * 100).toStringAsFixed(1)}% ${AppLocalizations.of(context).completed}',
-                style: Theme.of(context).textTheme.bodySmall,
-              )
             ],
           ),
         ),
