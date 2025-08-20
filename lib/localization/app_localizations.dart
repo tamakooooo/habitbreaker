@@ -60,20 +60,20 @@ class AppLocalizations {
     },
     'zh': {
       'app_name': '戒断不良习惯',
-      'welcome_message': '欢迎使用戒断不良习惯应用！',
-      'start_building_habits': '开始戒断不良习惯。',
+      'welcome_message': '欢迎使用戒断不良习惯应用程序！',
+      'start_building_habits': '今天就开始戒掉坏习惯吧。',
       'view_my_habits': '查看我的戒断',
-      'view_statistics': '查看统计',
+      'view_statistics': '查看统计信息',
       'my_habits': '我的戒断',
       'add_habit': '添加戒断',
       'no_habits_yet': '还没有戒断。添加你的第一个戒断！',
       'habit_details': '戒断详情',
-      'statistics': '统计',
+      'statistics': '统计信息',
       'total_habits': '总戒断数',
       'completed': '已完成',
       'total_streaks': '总连续天数',
       'avg_streak': '平均连续天数',
-      'habit_completion_over_time': '戒断完成情况',
+      'habit_completion_over_time': '戒断完成情况趋势',
       'login': '登录',
       'signup': '注册',
       'email': '邮箱',
@@ -90,11 +90,11 @@ class AppLocalizations {
       'target_end_date': '目标结束日期',
       'not_selected': '未选择',
       'save': '保存',
-      'mark_completed_today': '标记为今日完成',
+      'mark_completed_today': '标记为今日已完成',
       'days_remaining': '剩余天数',
       'time_remaining': '剩余时间',
-      'days_elapsed': '已戒断天数',
-      'time_elapsed': '已戒断时间',
+      'days_elapsed': '已过天数',
+      'time_elapsed': '已过时间',
       'stage': '阶段',
       'select_stage': '选择阶段',
       'stage_24_hours': '24小时',
@@ -105,6 +105,8 @@ class AppLocalizations {
       'stage_1_year': '1年',
       'icon': '图标',
       'select_icon': '选择图标',
+      'edit_habit': '编辑习惯',
+      'please_enter_habit_name': '请输入习惯名称',
     },
   };
 
@@ -154,4 +156,6 @@ class AppLocalizations {
   String get daysElapsed => _localizedValues[locale.languageCode]?['days_elapsed'] ?? 'Days Elapsed';
   String get timeElapsed => _localizedValues[locale.languageCode]?['time_elapsed'] ?? 'Time Elapsed';
   String get startTime => _localizedValues[locale.languageCode]?['start_time'] ?? 'Start Time';
+  String get editHabit => _localizedValues[locale.languageCode]?['edit_habit'] ?? 'Edit Habit';
+  String get pleaseEnterHabitName => _localizedValues[locale.languageCode]?['please_enter_habit_name'] ?? 'Please enter habit name';
 }

@@ -200,7 +200,7 @@ class _HabitCardState extends State<HabitCard> {
               Text(
                 '${(_progress * 100).toStringAsFixed(1)}% ${AppLocalizations.of(context).completed}',
                 style: Theme.of(context).textTheme.bodySmall,
-              ),
+              )
             ],
           ),
         ),

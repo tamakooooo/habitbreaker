@@ -27,6 +27,7 @@ class HabitDetailScreen extends ConsumerWidget {
             icon: const Icon(Icons.edit),
             onPressed: () {
               // Navigate to edit habit screen
+              context.push('/habits/$habitId/edit');
             },
           ),
         ],
