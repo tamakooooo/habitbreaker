@@ -79,9 +79,9 @@ class HabitService {
         nextStage = HabitStage.month1;
         break;
       case HabitStage.month1:
-        nextStage = HabitStage.quarter1;
+        nextStage = HabitStage.month3;
         break;
-      case HabitStage.quarter1:
+      case HabitStage.month3:
         nextStage = HabitStage.year1;
         break;
       case HabitStage.year1:

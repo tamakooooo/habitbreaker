@@ -17,6 +17,10 @@ final mockHabits = [
     targetEndDate: DateTime.now().add(const Duration(days: 30)),
     streakCount: 3,
     startDate: DateTime.now().subtract(const Duration(days: 5)),
+    stage: HabitStage.hours24,
+    currentStageStartDate: DateTime.now().subtract(const Duration(days: 5)),
+    currentStageEndDate: DateTime.now().subtract(const Duration(days: 5)).add(const Duration(hours: 24)),
+    icon: 'MdiIcons.target',
   ),
   Habit(
     id: '2',
@@ -26,6 +30,10 @@ final mockHabits = [
     targetEndDate: DateTime.now().add(const Duration(days: 30)),
     streakCount: 7,
     startDate: DateTime.now().subtract(const Duration(days: 10)),
+    stage: HabitStage.hours24,
+    currentStageStartDate: DateTime.now().subtract(const Duration(days: 10)),
+    currentStageEndDate: DateTime.now().subtract(const Duration(days: 10)).add(const Duration(hours: 24)),
+    icon: 'MdiIcons.book',
   ),
 ];
 

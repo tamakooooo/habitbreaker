@@ -8,7 +8,7 @@ part of 'habit.dart';
 
 class HabitAdapter extends TypeAdapter<Habit> {
   @override
-  final int typeId = 0;
+  final int typeId = 2;
 
   @override
   Habit read(BinaryReader reader) {
@@ -21,22 +21,25 @@ class HabitAdapter extends TypeAdapter<Habit> {
       name: fields[1] as String,
       description: fields[2] as String,
       createdDate: fields[3] as DateTime,
-      targetEndDate: fields[4] as DateTime,
-      startDate: fields[8] as DateTime,
-      isCompleted: fields[5] as bool,
-      streakCount: fields[6] as int,
-      completionDates: (fields[7] as List?)?.cast<DateTime>(),
+      startDate: fields[4] as DateTime,
+      targetEndDate: fields[5] as DateTime,
+      isCompleted: fields[6] as bool,
+      streakCount: fields[7] as int,
+      completionDates: (fields[8] as List).cast<DateTime>(),
       stage: fields[9] as HabitStage,
-      currentStageStartDate: fields[10] as DateTime?,
-      currentStageEndDate: fields[11] as DateTime?,
+      currentStageStartDate: fields[10] as DateTime,
+      currentStageEndDate: fields[11] as DateTime,
       icon: fields[12] as String,
+      reminderTime: fields[13] as TimeOfDay?,
+      isReminderEnabled: fields[14] as bool,
+      repeatFrequency: fields[15] as RepeatFrequency,
     );
   }
 
   @override
   void write(BinaryWriter writer, Habit obj) {
     writer
-      ..writeByte(13)
+      ..writeByte(16)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -46,15 +49,15 @@ class HabitAdapter extends TypeAdapter<Habit> {
       ..writeByte(3)
       ..write(obj.createdDate)
       ..writeByte(4)
-      ..write(obj.targetEndDate)
-      ..writeByte(5)
-      ..write(obj.isCompleted)
-      ..writeByte(6)
-      ..write(obj.streakCount)
-      ..writeByte(7)
-      ..write(obj.completionDates)
-      ..writeByte(8)
       ..write(obj.startDate)
+      ..writeByte(5)
+      ..write(obj.targetEndDate)
+      ..writeByte(6)
+      ..write(obj.isCompleted)
+      ..writeByte(7)
+      ..write(obj.streakCount)
+      ..writeByte(8)
+      ..write(obj.completionDates)
       ..writeByte(9)
       ..write(obj.stage)
       ..writeByte(10)
@@ -62,7 +65,13 @@ class HabitAdapter extends TypeAdapter<Habit> {
       ..writeByte(11)
       ..write(obj.currentStageEndDate)
       ..writeByte(12)
-      ..write(obj.icon);
+      ..write(obj.icon)
+      ..writeByte(13)
+      ..write(obj.reminderTime)
+      ..writeByte(14)
+      ..write(obj.isReminderEnabled)
+      ..writeByte(15)
+      ..write(obj.repeatFrequency);
   }
 
   @override
@@ -76,55 +85,110 @@ class HabitAdapter extends TypeAdapter<Habit> {
           typeId == other.typeId;
 }
 
-// **************************************************************************
-// JsonSerializableGenerator
-// **************************************************************************
+class HabitStageAdapter extends TypeAdapter<HabitStage> {
+  @override
+  final int typeId = 0;
 
-Habit _$HabitFromJson(Map<String, dynamic> json) => Habit(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      description: json['description'] as String,
-      createdDate: DateTime.parse(json['createdDate'] as String),
-      targetEndDate: DateTime.parse(json['targetEndDate'] as String),
-      startDate: DateTime.parse(json['startDate'] as String),
-      isCompleted: json['isCompleted'] as bool? ?? false,
-      streakCount: (json['streakCount'] as num?)?.toInt() ?? 0,
-      completionDates: (json['completionDates'] as List<dynamic>?)
-          ?.map((e) => DateTime.parse(e as String))
-          .toList(),
-      stage: $enumDecodeNullable(_$HabitStageEnumMap, json['stage']) ??
-          HabitStage.hours24,
-      currentStageStartDate: json['currentStageStartDate'] == null
-          ? null
-          : DateTime.parse(json['currentStageStartDate'] as String),
-      currentStageEndDate: json['currentStageEndDate'] == null
-          ? null
-          : DateTime.parse(json['currentStageEndDate'] as String),
-      icon: json['icon'] as String? ?? 'default_icon',
-    );
+  @override
+  HabitStage read(BinaryReader reader) {
+    switch (reader.readByte()) {
+      case 0:
+        return HabitStage.hours24;
+      case 1:
+        return HabitStage.days3;
+      case 2:
+        return HabitStage.week1;
+      case 3:
+        return HabitStage.month1;
+      case 4:
+        return HabitStage.month3;
+      case 5:
+        return HabitStage.year1;
+      default:
+        return HabitStage.hours24;
+    }
+  }
 
-Map<String, dynamic> _$HabitToJson(Habit instance) => <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
-      'description': instance.description,
-      'createdDate': instance.createdDate.toIso8601String(),
-      'targetEndDate': instance.targetEndDate.toIso8601String(),
-      'isCompleted': instance.isCompleted,
-      'streakCount': instance.streakCount,
-      'completionDates':
-          instance.completionDates.map((e) => e.toIso8601String()).toList(),
-      'startDate': instance.startDate.toIso8601String(),
-      'stage': _$HabitStageEnumMap[instance.stage]!,
-      'currentStageStartDate': instance.currentStageStartDate.toIso8601String(),
-      'currentStageEndDate': instance.currentStageEndDate.toIso8601String(),
-      'icon': instance.icon,
-    };
+  @override
+  void write(BinaryWriter writer, HabitStage obj) {
+    switch (obj) {
+      case HabitStage.hours24:
+        writer.writeByte(0);
+        break;
+      case HabitStage.days3:
+        writer.writeByte(1);
+        break;
+      case HabitStage.week1:
+        writer.writeByte(2);
+        break;
+      case HabitStage.month1:
+        writer.writeByte(3);
+        break;
+      case HabitStage.month3:
+        writer.writeByte(4);
+        break;
+      case HabitStage.year1:
+        writer.writeByte(5);
+        break;
+    }
+  }
 
-const _$HabitStageEnumMap = {
-  HabitStage.hours24: 'hours24',
-  HabitStage.days3: 'days3',
-  HabitStage.week1: 'week1',
-  HabitStage.month1: 'month1',
-  HabitStage.quarter1: 'quarter1',
-  HabitStage.year1: 'year1',
-};
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is HabitStageAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class RepeatFrequencyAdapter extends TypeAdapter<RepeatFrequency> {
+  @override
+  final int typeId = 1;
+
+  @override
+  RepeatFrequency read(BinaryReader reader) {
+    switch (reader.readByte()) {
+      case 0:
+        return RepeatFrequency.daily;
+      case 1:
+        return RepeatFrequency.weekly;
+      case 2:
+        return RepeatFrequency.monthly;
+      case 3:
+        return RepeatFrequency.custom;
+      default:
+        return RepeatFrequency.daily;
+    }
+  }
+
+  @override
+  void write(BinaryWriter writer, RepeatFrequency obj) {
+    switch (obj) {
+      case RepeatFrequency.daily:
+        writer.writeByte(0);
+        break;
+      case RepeatFrequency.weekly:
+        writer.writeByte(1);
+        break;
+      case RepeatFrequency.monthly:
+        writer.writeByte(2);
+        break;
+      case RepeatFrequency.custom:
+        writer.writeByte(3);
+        break;
+    }
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is RepeatFrequencyAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}

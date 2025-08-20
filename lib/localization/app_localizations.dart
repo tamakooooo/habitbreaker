@@ -49,6 +49,7 @@ class AppLocalizations {
       'time_elapsed': 'Time Elapsed',
       'stage': 'Stage',
       'select_stage': 'Select Stage',
+      'target_stage': 'Target Stage',
       'stage_24_hours': '24 Hours',
       'stage_3_days': '3 Days',
       'stage_1_week': '1 Week',
@@ -57,6 +58,19 @@ class AppLocalizations {
       'stage_1_year': '1 Year',
       'icon': 'Icon',
       'select_icon': 'Select Icon',
+      'reminder_time': 'Reminder Time',
+      'set_reminder': 'Set Reminder',
+      'reminder_enabled': 'Reminder Enabled',
+      'reminder_disabled': 'Reminder Disabled',
+      'repeat_frequency': 'Repeat Frequency',
+      'daily': 'Daily',
+      'weekly': 'Weekly',
+      'monthly': 'Monthly',
+      'custom': 'Custom',
+      'habit_created': 'Habit created successfully',
+      'error': 'Error',
+      'select_date': 'Select date',
+      'save_habit': 'Save Habit',
     },
     'zh': {
       'app_name': '戒断不良习惯',
@@ -107,6 +121,10 @@ class AppLocalizations {
       'select_icon': '选择图标',
       'edit_habit': '编辑习惯',
       'please_enter_habit_name': '请输入习惯名称',
+      'habit_created': '习惯创建成功',
+      'error': '错误',
+      'select_date': '选择日期',
+      'save_habit': '保存习惯',
     },
   };
 
@@ -158,4 +176,18 @@ class AppLocalizations {
   String get startTime => _localizedValues[locale.languageCode]?['start_time'] ?? 'Start Time';
   String get editHabit => _localizedValues[locale.languageCode]?['edit_habit'] ?? 'Edit Habit';
   String get pleaseEnterHabitName => _localizedValues[locale.languageCode]?['please_enter_habit_name'] ?? 'Please enter habit name';
+  String get targetStage => _localizedValues[locale.languageCode]?['target_stage'] ?? 'Target Stage';
+  String get reminderTime => _localizedValues[locale.languageCode]?['reminder_time'] ?? 'Reminder Time';
+  String get setReminder => _localizedValues[locale.languageCode]?['set_reminder'] ?? 'Set Reminder';
+  String get reminderEnabled => _localizedValues[locale.languageCode]?['reminder_enabled'] ?? 'Reminder Enabled';
+  String get reminderDisabled => _localizedValues[locale.languageCode]?['reminder_disabled'] ?? 'Reminder Disabled';
+  String get repeatFrequency => _localizedValues[locale.languageCode]?['repeat_frequency'] ?? 'Repeat Frequency';
+  String get daily => _localizedValues[locale.languageCode]?['daily'] ?? 'Daily';
+  String get weekly => _localizedValues[locale.languageCode]?['weekly'] ?? 'Weekly';
+  String get monthly => _localizedValues[locale.languageCode]?['monthly'] ?? 'Monthly';
+  String get custom => _localizedValues[locale.languageCode]?['custom'] ?? 'Custom';
+  String get habitCreated => _localizedValues[locale.languageCode]?['habit_created'] ?? 'Habit created successfully';
+  String get error => _localizedValues[locale.languageCode]?['error'] ?? 'Error';
+  String get selectDate => _localizedValues[locale.languageCode]?['select_date'] ?? 'Select date';
+  String get saveHabit => _localizedValues[locale.languageCode]?['save_habit'] ?? 'Save Habit';
 }

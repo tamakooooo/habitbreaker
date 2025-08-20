@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:habit_breaker_app/widgets/icon_selector.dart';
 
 class IconDemoScreen extends StatefulWidget {
-  const IconDemoScreen({Key? key}) : super(key: key);
+  const IconDemoScreen({super.key});
 
   @override
   _IconDemoScreenState createState() => _IconDemoScreenState();

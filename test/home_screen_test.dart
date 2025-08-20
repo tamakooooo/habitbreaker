@@ -13,16 +13,16 @@ void main() {
 
   testWidgets('Home screen has correct title', (WidgetTester tester) async {
     await tester.pumpWidget(
-      ProviderScope(
-        child: const MaterialApp(
-          home: const HomeScreen(),
-          localizationsDelegates: const [
+      const ProviderScope(
+        child: MaterialApp(
+          home: HomeScreen(),
+          localizationsDelegates: [
             AppLocalizationsDelegate(),
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [
+          supportedLocales: [
             Locale('en'),
             Locale('zh'),
           ],
@@ -37,16 +37,16 @@ void main() {
 
   testWidgets('Home screen has navigation buttons', (WidgetTester tester) async {
     await tester.pumpWidget(
-      ProviderScope(
-        child: const MaterialApp(
-          home: const HomeScreen(),
-          localizationsDelegates: const [
+      const ProviderScope(
+        child: MaterialApp(
+          home: HomeScreen(),
+          localizationsDelegates: [
             AppLocalizationsDelegate(),
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [
+          supportedLocales: [
             Locale('en'),
             Locale('zh'),
           ],

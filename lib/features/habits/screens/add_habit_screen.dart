@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:habit_breaker_app/models/habit.dart';
-import 'package:habit_breaker_app/core/providers/habit_providers.dart';
-import 'package:habit_breaker_app/localization/app_localizations.dart';
-import 'package:go_router/go_router.dart';
+import 'package:uuid/uuid.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import '../../../models/habit.dart';
+import '../../../core/providers/habit_providers.dart';
+import '../../../localization/app_localizations.dart';
 
 class AddHabitScreen extends ConsumerStatefulWidget {
   const AddHabitScreen({super.key});
@@ -17,9 +17,14 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
+  
   DateTime? _startDate;
-  TimeOfDay _startTime = const TimeOfDay(hour: 9, minute: 0); // Default start time
-  String _selectedIcon = 'default_icon';
+  TimeOfDay _startTime = TimeOfDay.now();
+  String? _selectedIcon = 'MdiIcons.target';
+  HabitStage _selectedStage = HabitStage.hours24;
+  TimeOfDay? _reminderTime;
+  bool _isReminderEnabled = false;
+  RepeatFrequency _repeatFrequency = RepeatFrequency.daily;
 
   @override
   void dispose() {
@@ -27,17 +32,137 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
     _descriptionController.dispose();
     super.dispose();
   }
-  
 
-  
+  Future<void> _saveHabit() async {
+    if (!_formKey.currentState!.validate()) return;
+    if (_startDate == null) return;
 
+    final targetEndDate = Habit.calculateStageEndDate(_startDate!, _selectedStage);
+    
+    final newHabit = Habit(
+      id: const Uuid().v4(),
+      name: _nameController.text,
+      description: _descriptionController.text,
+      createdDate: DateTime.now(),
+      startDate: _startDate!,
+      targetEndDate: targetEndDate,
+      stage: _selectedStage,
+      icon: _selectedIcon ?? 'MdiIcons.target',
+      reminderTime: _reminderTime,
+      isReminderEnabled: _isReminderEnabled,
+      repeatFrequency: _repeatFrequency,
+      currentStageStartDate: _startDate!,
+      currentStageEndDate: targetEndDate,
+    );
+
+    try {
+      final habitService = ref.read(habitServiceProvider);
+      await habitService.createHabit(newHabit);
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context).habitCreated)),
+        );
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${AppLocalizations.of(context).error}: $e')),
+        );
+      }
+    }
+  }
+
+  String _getStageDisplayName(BuildContext context, HabitStage stage) {
+    final loc = AppLocalizations.of(context);
+    switch (stage) {
+      case HabitStage.hours24:
+        return loc.stage24Hours;
+      case HabitStage.days3:
+        return loc.stage3Days;
+      case HabitStage.week1:
+        return loc.stage1Week;
+      case HabitStage.month1:
+        return loc.stage1Month;
+      case HabitStage.month3:
+        return '3个月';
+      case HabitStage.year1:
+        return '1年';
+    }
+  }
+
+  String _getRepeatFrequencyDisplayName(BuildContext context, RepeatFrequency frequency) {
+    final loc = AppLocalizations.of(context);
+    switch (frequency) {
+      case RepeatFrequency.daily:
+        return loc.daily;
+      case RepeatFrequency.weekly:
+        return loc.weekly;
+      case RepeatFrequency.monthly:
+        return loc.monthly;
+      case RepeatFrequency.custom:
+        return loc.custom;
+    }
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _startDate ?? DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+    if (picked != null && picked != _startDate) {
+      setState(() {
+        _startDate = picked;
+      });
+    }
+  }
+
+  Future<void> _selectTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: _startTime,
+    );
+    if (picked != null && picked != _startTime) {
+      setState(() {
+        _startTime = picked;
+      });
+    }
+  }
+
+  Future<void> _selectReminderTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: _reminderTime ?? TimeOfDay.now(),
+    );
+    if (picked != null) {
+      setState(() {
+        _reminderTime = picked;
+      });
+    }
+  }
 
   Future<String?> _selectIcon(BuildContext context) async {
-    final selectedIcon = await showDialog<String>(
+    final icons = [
+      {'name': '目标', 'icon': MdiIcons.target},
+      {'name': '星星', 'icon': MdiIcons.star},
+      {'name': '心形', 'icon': MdiIcons.heart},
+      {'name': '奖杯', 'icon': MdiIcons.trophy},
+      {'name': '闪电', 'icon': MdiIcons.lightningBolt},
+      {'name': '吸烟', 'icon': MdiIcons.smokingOff},
+      {'name': '酒精', 'icon': MdiIcons.glassWine},
+      {'name': '咖啡', 'icon': MdiIcons.coffee},
+      {'name': '手机', 'icon': MdiIcons.cellphone},
+      {'name': '游戏', 'icon': MdiIcons.gamepadVariant},
+    ];
+
+    return await showDialog<String>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(AppLocalizations.of(context).selectIcon),
+          title: const Text('选择图标'),
           content: SizedBox(
             width: 300,
             height: 400,
@@ -47,191 +172,188 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
                 crossAxisSpacing: 8,
                 mainAxisSpacing: 8,
               ),
-              itemCount: 20, // Show first 20 icons as an example
-              itemBuilder: (BuildContext context, int index) {
-                // Example icons - in a real app, you might want to show more icons
-                final icons = [
-                  'alarm', 'android', 'apple', 'beer', 'book', 'camera', 'car', 'coffee',
-                  'cog', 'computer', 'diamond', 'dog', 'email', 'facebook', 'gamepad', 'github',
-                  'heart', 'home', 'instagram', 'lightbulb'
-                ];
-                
-                final iconData = MdiIcons.fromString(icons[index]);
-                
-                return IconButton(
-                  icon: Icon(iconData),
-                  onPressed: () {
-                    Navigator.of(context).pop(icons[index]);
+              itemCount: icons.length,
+              itemBuilder: (context, index) {
+                final iconData = icons[index];
+                return InkWell(
+                  onTap: () {
+                    Navigator.pop(context, 'MdiIcons.${iconData['icon'].toString().substring(8)}');
                   },
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(iconData['icon'] as IconData, size: 32),
+                      const SizedBox(height: 4),
+                      Text(iconData['name'] as String, style: const TextStyle(fontSize: 10)),
+                    ],
+                  ),
                 );
               },
             ),
           ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('取消'),
+            ),
+          ],
         );
       },
     );
-    
-    return selectedIcon;
   }
 
-  Future<void> _saveHabit(WidgetRef ref) async {
-    if (_formKey.currentState!.validate()) {
-      if (_startDate == null) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please select a start date')),
+  Future<void> _selectStage(BuildContext context) async {
+    final stage = await showDialog<HabitStage>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(AppLocalizations.of(context).selectStage),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: HabitStage.values.map((stage) {
+              return ListTile(
+                title: Text(_getStageDisplayName(context, stage)),
+                onTap: () => Navigator.pop(context, stage),
+              );
+            }).toList(),
+          ),
         );
-        return;
-      }
-      
-      // Combine date and time
-      final startDateTime = DateTime(
-        _startDate!.year,
-        _startDate!.month,
-        _startDate!.day,
-        _startTime.hour,
-        _startTime.minute,
-      );
-      
-      final habit = Habit(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        name: _nameController.text,
-        description: _descriptionController.text,
-        createdDate: DateTime.now(),
-        startDate: startDateTime,
-        targetEndDate: Habit.calculateStageEndDate(startDateTime, HabitStage.hours24),
-        stage: HabitStage.hours24,
-        currentStageStartDate: startDateTime,
-        icon: _selectedIcon,
-      );
+      },
+    );
+    if (stage != null) {
+      setState(() {
+        _selectedStage = stage;
+      });
+    }
+  }
 
-      // Save habit using provider
-      final habitService = ref.read(habitServiceProvider);
-      try {
-        await habitService.createHabit(habit);
-        
-        // Invalidate habits provider to refresh the list
-        ref.invalidate(habitsProvider);
-        
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Habit added successfully!')),
+  Future<void> _selectRepeatFrequency(BuildContext context) async {
+    final frequency = await showDialog<RepeatFrequency>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(AppLocalizations.of(context).repeatFrequency),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: RepeatFrequency.values.map((frequency) {
+              return ListTile(
+                title: Text(_getRepeatFrequencyDisplayName(context, frequency)),
+                onTap: () => Navigator.pop(context, frequency),
+              );
+            }).toList(),
+          ),
         );
-        
-        // Navigate back to the home page
-        if (!mounted) return;
-        context.go('/');
-      } catch (error) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error saving habit: $error')),
-        );
-      }
+      },
+    );
+    if (frequency != null) {
+      setState(() {
+        _repeatFrequency = frequency;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+    
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context).addHabit),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.save),
-            onPressed: () => _saveHabit(ref),
-            tooltip: AppLocalizations.of(context).save,
-          ),
-        ],
+        title: Text(loc.addHabit),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context).habitName,
-                  border: const OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  // Description is optional
-                  return null;
-                },
+      body: Form(
+        key: _formKey,
+        child: ListView(
+          padding: const EdgeInsets.all(16.0),
+          children: [
+            TextFormField(
+              controller: _nameController,
+              decoration: InputDecoration(
+                labelText: loc.habitName,
+                border: const OutlineInputBorder(),
               ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _descriptionController,
-                decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context).description,
-                  border: const OutlineInputBorder(),
-                ),
-                maxLines: 3,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return loc.pleaseEnterHabitName;
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _descriptionController,
+              decoration: InputDecoration(
+                labelText: loc.description,
+                border: const OutlineInputBorder(),
               ),
-              const SizedBox(height: 16),
+              maxLines: 3,
+            ),
+            const SizedBox(height: 16),
+            ListTile(
+              leading: const Icon(Icons.calendar_today),
+              title: Text(loc.startDate),
+              subtitle: Text(_startDate?.toString().split(' ')[0] ?? loc.selectDate),
+              onTap: () => _selectDate(context),
+            ),
+            ListTile(
+              leading: const Icon(Icons.access_time),
+              title: Text(loc.startTime),
+              subtitle: Text(_startTime.format(context)),
+              onTap: () => _selectTime(context),
+            ),
+            ListTile(
+              leading: const Icon(Icons.category),
+              title: Text(loc.targetStage),
+              subtitle: Text(_getStageDisplayName(context, _selectedStage)),
+              onTap: () => _selectStage(context),
+            ),
+            ListTile(
+              leading: const Icon(Icons.emoji_events),
+              title: const Text('图标'),
+              subtitle: Text(_selectedIcon?.replaceAll('MdiIcons.', '') ?? '目标'),
+              onTap: () async {
+                final icon = await _selectIcon(context);
+                if (icon != null) {
+                  setState(() {
+                    _selectedIcon = icon;
+                  });
+                }
+              },
+            ),
+            SwitchListTile(
+              title: Text(loc.setReminder),
+              value: _isReminderEnabled,
+              onChanged: (value) {
+                setState(() {
+                  _isReminderEnabled = value;
+                });
+              },
+            ),
+            if (_isReminderEnabled) ...[
               ListTile(
-                title: Text(AppLocalizations.of(context).icon),
-                subtitle: Text(_selectedIcon),
-                trailing: Icon(_selectedIcon == 'default_icon' ? Icons.star : MdiIcons.fromString(_selectedIcon)),
-                onTap: () async {
-                  final selectedIcon = await _selectIcon(context);
-                  if (selectedIcon != null) {
-                    setState(() {
-                      _selectedIcon = selectedIcon;
-                    });
-                  }
-                },
+                leading: const Icon(Icons.notifications),
+                title: Text(loc.reminderTime),
+                subtitle: Text(_reminderTime?.format(context) ?? loc.setReminder),
+                onTap: () => _selectReminderTime(context),
               ),
-              const SizedBox(height: 16),
-              ListTile(
-                title: Text(AppLocalizations.of(context).startDate),
-                subtitle: Text(
-                  _startDate == null
-                      ? AppLocalizations.of(context).notSelected
-                      : '${_startDate!.year}-${_startDate!.month}-${_startDate!.day}',
-                ),
-                trailing: const Icon(Icons.calendar_today),
-                onTap: () async {
-                  final date = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime.now().subtract(const Duration(days: 365)),
-                    lastDate: DateTime.now().add(const Duration(days: 365)),
-                  );
-                  if (date != null) {
-                    setState(() {
-                      _startDate = date;
-                    });
-                  }
-                },
-              ),
-              const SizedBox(height: 16),
-              ListTile(
-                title: Text(AppLocalizations.of(context).startTime),
-                subtitle: Text(
-                  '${_startTime.hour.toString().padLeft(2, '0')}:${_startTime.minute.toString().padLeft(2, '0')}',
-                ),
-                trailing: const Icon(Icons.access_time),
-                onTap: () async {
-                  final time = await showTimePicker(
-                    context: context,
-                    initialTime: _startTime,
-                  );
-                  if (time != null) {
-                    setState(() {
-                      _startTime = time;
-                    });
-                  }
-                },
-              ),
-
             ],
-          ),
+            ListTile(
+              leading: const Icon(Icons.repeat),
+              title: Text(loc.repeatFrequency),
+              subtitle: Text(_getRepeatFrequencyDisplayName(context, _repeatFrequency)),
+              onTap: () => _selectRepeatFrequency(context),
+            ),
+            const SizedBox(height: 32),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _saveHabit,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: Text(loc.saveHabit),
+              ),
+            ),
+          ],
         ),
       ),
     );

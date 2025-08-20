@@ -99,7 +99,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
-                SizedBox(
+                const SizedBox(
                   height: 200,
                   child: LineChartSample1(),
                 ),

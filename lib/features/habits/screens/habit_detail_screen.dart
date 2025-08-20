@@ -56,12 +56,10 @@ class HabitDetailBody extends ConsumerWidget {
         return '1 Week';
       case HabitStage.month1:
         return '1 Month';
-      case HabitStage.quarter1:
-        return '1 Quarter';
+      case HabitStage.month3:
+        return '3 Months';
       case HabitStage.year1:
         return '1 Year';
-      default:
-        return '';
     }
   }
 

@@ -4,7 +4,7 @@ import 'package:line_icons/line_icons.dart';
 class IconSelector extends StatefulWidget {
   final Function(String) onIconSelected;
 
-  const IconSelector({Key? key, required this.onIconSelected}) : super(key: key);
+  const IconSelector({super.key, required this.onIconSelected});
 
   @override
   _IconSelectorState createState() => _IconSelectorState();
@@ -127,12 +127,12 @@ class _IconSelectorState extends State<IconSelector> {
                 },
                 child: Container(
                   decoration: BoxDecoration(
-                    color: isSelected ? Theme.of(context).primaryColor.withOpacity(0.2) : Colors.transparent,
+                    color: isSelected ? Theme.of(context).primaryColor.withValues(alpha: 0.2) : Colors.transparent,
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: isSelected 
                           ? Theme.of(context).primaryColor 
-                          : Colors.grey.withOpacity(0.5),
+                          : Colors.grey.withValues(alpha: 0.5),
                     ),
                   ),
                   child: Column(

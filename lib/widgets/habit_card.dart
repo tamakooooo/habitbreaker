@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:habit_breaker_app/models/habit.dart';
 import 'package:habit_breaker_app/localization/app_localizations.dart';
 
@@ -59,16 +58,7 @@ class _HabitCardState extends State<HabitCard> {
     }
   }
 
-  String _formatElapsedTime(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final days = duration.inDays;
-    final hours = duration.inHours % 24;
-    final minutes = duration.inMinutes % 60;
-    final seconds = duration.inSeconds % 60;
-    
-    return '${twoDigits(days)}:${twoDigits(hours)}:${twoDigits(minutes)}:${twoDigits(seconds)}';
-  }
-
+  
   String _getStageLabel() {
     final elapsedDays = _elapsedTime.inDays;
     

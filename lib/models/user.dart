@@ -19,7 +19,7 @@ class User extends Equatable {
   @HiveField(3)
   final String? profilePicture;
 
-  User({
+  const User({
     required this.id,
     required this.email,
     required this.name,
