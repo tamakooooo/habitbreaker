@@ -46,15 +46,27 @@ class _HabitCardState extends State<HabitCard> {
     _currentTime = DateTime.now();
     _elapsedTime = _currentTime.difference(widget.habit.startDate);
     
-    final totalDuration = widget.habit.targetEndDate.difference(widget.habit.startDate);
-    final elapsedDuration = _currentTime.difference(widget.habit.startDate);
-    
-    if (elapsedDuration.isNegative) {
-      _progress = 0.0;
-    } else if (elapsedDuration >= totalDuration) {
-      _progress = 1.0;
+    // 检查当前阶段是否已完成
+    if (_currentTime.isAfter(widget.habit.currentStageEndDate)) {
+      // 如果当前阶段已完成，按下一阶段计算进度
+      final stageDuration = widget.habit.currentStageEndDate.difference(widget.habit.currentStageStartDate);
+      final elapsedStageDuration = _currentTime.difference(widget.habit.currentStageStartDate);
+      _progress = elapsedStageDuration.inSeconds / stageDuration.inSeconds;
     } else {
-      _progress = elapsedDuration.inSeconds / totalDuration.inSeconds;
+      // 如果当前阶段未完成，按当前阶段计算进度
+      final stageDuration = widget.habit.currentStageEndDate.difference(widget.habit.currentStageStartDate);
+      final elapsedStageDuration = _currentTime.difference(widget.habit.currentStageStartDate);
+      
+      if (elapsedStageDuration.isNegative) {
+        _progress = 0.0;
+      } else {
+        _progress = elapsedStageDuration.inSeconds / stageDuration.inSeconds;
+      }
+    }
+    
+    // 确保进度不超过1.0
+    if (_progress > 1.0) {
+      _progress = 1.0;
     }
   }
 
