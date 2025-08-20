@@ -59,34 +59,7 @@ class _HabitCardState extends State<HabitCard> {
   }
 
   
-  String _getStageLabel() {
-    final elapsedDays = _elapsedTime.inDays;
-    
-    // 根据已用天数自动确定阶段
-    if (elapsedDays < 1) {
-      // 少于1天，显示小时
-      return AppLocalizations.of(context).stage24Hours;
-    } else if (elapsedDays < 3) {
-      // 少于3天
-      return AppLocalizations.of(context).stage3Days;
-    } else if (elapsedDays < 7) {
-      // 少于1周
-      return AppLocalizations.of(context).stage1Week;
-    } else if (elapsedDays < 30) {
-      // 少于1个月
-      return AppLocalizations.of(context).stage1Month;
-    } else if (elapsedDays < 90) {
-      // 少于1个季度
-      return AppLocalizations.of(context).stage1Quarter;
-    } else if (elapsedDays < 180) {
-      // 少于半年
-      return AppLocalizations.of(context).stage1Year.replaceAll('1 Year', '6 Months');
-    } else {
-      // 180天及以上
-      return AppLocalizations.of(context).stage1Year;
-    }
-  }
-
+  
   Widget _buildTimeUnit(int value, String label) {
     return Column(
       children: [
@@ -141,7 +114,7 @@ class _HabitCardState extends State<HabitCard> {
               ),
               const SizedBox(height: 8),
               Text(
-                '${AppLocalizations.of(context).timeElapsed} - ${_getStageLabel()}',
+                AppLocalizations.of(context).timeElapsed,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 16),
