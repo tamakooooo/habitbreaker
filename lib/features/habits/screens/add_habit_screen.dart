@@ -19,7 +19,6 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
   final _descriptionController = TextEditingController();
   DateTime? _startDate;
   TimeOfDay _startTime = const TimeOfDay(hour: 9, minute: 0); // Default start time
-  HabitStage _selectedStage = HabitStage.hours24;
   String _selectedIcon = 'default_icon';
 
   @override
@@ -29,35 +28,9 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
     super.dispose();
   }
   
-  String _getStageLabel(HabitStage stage) {
-    switch (stage) {
-      case HabitStage.hours24:
-        return AppLocalizations.of(context).stage24Hours;
-      case HabitStage.days3:
-        return AppLocalizations.of(context).stage3Days;
-      case HabitStage.week1:
-        return AppLocalizations.of(context).stage1Week;
-      case HabitStage.month1:
-        return AppLocalizations.of(context).stage1Month;
-      case HabitStage.quarter1:
-        return AppLocalizations.of(context).stage1Quarter;
-      case HabitStage.year1:
-        return AppLocalizations.of(context).stage1Year;
-    }
-  }
+
   
-  Widget _buildStageRadio(HabitStage stage, String label) {
-    return RadioListTile<HabitStage>(
-      title: Text(label),
-      value: stage,
-      groupValue: _selectedStage,
-      onChanged: (HabitStage? value) {
-        if (value != null) {
-          Navigator.of(context).pop(value);
-        }
-      },
-    );
-  }
+
 
   Future<String?> _selectIcon(BuildContext context) async {
     final selectedIcon = await showDialog<String>(
@@ -126,8 +99,8 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
         description: _descriptionController.text,
         createdDate: DateTime.now(),
         startDate: startDateTime,
-        targetEndDate: Habit.calculateStageEndDate(startDateTime, _selectedStage),
-        stage: _selectedStage,
+        targetEndDate: Habit.calculateStageEndDate(startDateTime, HabitStage.hours24),
+        stage: HabitStage.hours24,
         currentStageStartDate: startDateTime,
         icon: _selectedIcon,
       );
@@ -256,42 +229,7 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
                   }
                 },
               ),
-              const SizedBox(height: 16),
-              ListTile(
-                title: Text(AppLocalizations.of(context).stage),
-                subtitle: Text(_getStageLabel(_selectedStage)),
-                trailing: const Icon(Icons.arrow_drop_down),
-                onTap: () async {
-                  final selectedStage = await showDialog<HabitStage>(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text(AppLocalizations.of(context).selectStage),
-                        content: StatefulBuilder(
-                          builder: (BuildContext context, StateSetter setState) {
-                            return Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                _buildStageRadio(HabitStage.hours24, AppLocalizations.of(context).stage24Hours),
-                                _buildStageRadio(HabitStage.days3, AppLocalizations.of(context).stage3Days),
-                                _buildStageRadio(HabitStage.week1, AppLocalizations.of(context).stage1Week),
-                                _buildStageRadio(HabitStage.month1, AppLocalizations.of(context).stage1Month),
-                                _buildStageRadio(HabitStage.quarter1, AppLocalizations.of(context).stage1Quarter),
-                                _buildStageRadio(HabitStage.year1, AppLocalizations.of(context).stage1Year),
-                              ],
-                            );
-                          },
-                        ),
-                      );
-                    },
-                  );
-                  if (selectedStage != null) {
-                    setState(() {
-                      _selectedStage = selectedStage;
-                    });
-                  }
-                },
-              ),
+
             ],
           ),
         ),

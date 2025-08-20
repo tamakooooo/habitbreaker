@@ -22,9 +22,8 @@ class HabitCard extends StatefulWidget {
 
 class _HabitCardState extends State<HabitCard> {
   late DateTime _currentTime;
-  late Duration _remainingTime;
+  late Duration _elapsedTime;
   late double _progress;
-  late int _daysRemaining;
   late Timer _timer;
 
   @override
@@ -46,8 +45,7 @@ class _HabitCardState extends State<HabitCard> {
 
   void _updateTime() {
     _currentTime = DateTime.now();
-    _remainingTime = widget.habit.targetEndDate.difference(_currentTime);
-    _daysRemaining = _remainingTime.inDays;
+    _elapsedTime = _currentTime.difference(widget.habit.startDate);
     
     final totalDuration = widget.habit.targetEndDate.difference(widget.habit.startDate);
     final elapsedDuration = _currentTime.difference(widget.habit.startDate);
@@ -61,7 +59,7 @@ class _HabitCardState extends State<HabitCard> {
     }
   }
 
-  String _formatTime(Duration duration) {
+  String _formatElapsedTime(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
     final days = duration.inDays;
     final hours = duration.inHours % 24;
@@ -71,28 +69,62 @@ class _HabitCardState extends State<HabitCard> {
     return '${twoDigits(days)}:${twoDigits(hours)}:${twoDigits(minutes)}:${twoDigits(seconds)}';
   }
 
-  String _getCurrentStageLabel() {
-    final elapsedDuration = _currentTime.difference(widget.habit.startDate);
-    final elapsedDays = elapsedDuration.inDays;
-
-    // Determine current stage based on abstinence duration
+  String _getStageLabel() {
+    final elapsedDays = _elapsedTime.inDays;
+    
+    // 根据已用天数自动确定阶段
     if (elapsedDays < 1) {
+      // 少于1天，显示小时
       return AppLocalizations.of(context).stage24Hours;
     } else if (elapsedDays < 3) {
-      return AppLocalizations.of(context).stage24Hours;
-    } else if (elapsedDays < 7) {
+      // 少于3天
       return AppLocalizations.of(context).stage3Days;
-    } else if (elapsedDays < 30) {
+    } else if (elapsedDays < 7) {
+      // 少于1周
       return AppLocalizations.of(context).stage1Week;
-    } else if (elapsedDays < 90) {
+    } else if (elapsedDays < 30) {
+      // 少于1个月
       return AppLocalizations.of(context).stage1Month;
-    } else if (elapsedDays < 180) {
+    } else if (elapsedDays < 90) {
+      // 少于1个季度
       return AppLocalizations.of(context).stage1Quarter;
-    } else if (elapsedDays < 365) {
-      return AppLocalizations.of(context).stage1Year;
+    } else if (elapsedDays < 180) {
+      // 少于半年
+      return AppLocalizations.of(context).stage1Year.replaceAll('1 Year', '6 Months');
     } else {
+      // 180天及以上
       return AppLocalizations.of(context).stage1Year;
     }
+  }
+
+  Widget _buildTimeUnit(int value, String label) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Theme.of(context).primaryColor,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Text(
+            value.toString().padLeft(2, '0'),
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 12,
+            color: Colors.grey,
+          ),
+        ),
+      ],
+    );
   }
 
   @override
@@ -115,10 +147,33 @@ class _HabitCardState extends State<HabitCard> {
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                   ),
-                Text(
-                  '${AppLocalizations.of(context).timeRemaining}: ${_formatTime(_remainingTime)}',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '${AppLocalizations.of(context).timeElapsed} - ${_getStageLabel()}',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildTimeUnit(
+                    _elapsedTime.inDays,
+                    'Days',
+                  ),
+                  _buildTimeUnit(
+                    _elapsedTime.inHours % 24,
+                    'Hours',
+                  ),
+                  _buildTimeUnit(
+                    _elapsedTime.inMinutes % 60,
+                    'Minutes',
+                  ),
+                  _buildTimeUnit(
+                    _elapsedTime.inSeconds % 60,
+                    'Seconds',
+                  ),
                 ],
               ),
               const SizedBox(height: 8),
@@ -136,9 +191,14 @@ class _HabitCardState extends State<HabitCard> {
                 '${(_progress * 100).toStringAsFixed(1)}% ${AppLocalizations.of(context).completed}',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
+              const SizedBox(height: 16),
+              LinearProgressIndicator(
+                value: _progress,
+                minHeight: 8,
+              ),
               const SizedBox(height: 8),
               Text(
-                '${AppLocalizations.of(context).stage}: ${_getCurrentStageLabel()}',
+                '${(_progress * 100).toStringAsFixed(1)}% ${AppLocalizations.of(context).completed}',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ],

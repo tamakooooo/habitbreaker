@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:habit_breaker_app/core/providers/habit_providers.dart';
 import 'package:habit_breaker_app/widgets/habit_card.dart';
-import 'package:habit_breaker_app/widgets/countdown_timer.dart';
+
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -28,20 +28,13 @@ class HomeScreen extends ConsumerWidget {
               );
             }
             
-            // Show countdown timer for the first habit
             return ListView.builder(
-              itemCount: habits.length + 1,
+              itemCount: habits.length,
               itemBuilder: (context, index) {
-                if (index == 0) {
-                  // Show countdown timer for the first habit
-                  return CountdownTimer(habit: habits[0]);
-                }
-                
-                final habitIndex = index - 1;
                 return HabitCard(
-                  habit: habits[habitIndex],
+                  habit: habits[index],
                   onTap: () {
-                    context.push('/habits/${habits[habitIndex].id}');
+                    context.push('/habits/${habits[index].id}');
                   },
                   onCheck: () {
                     // Handle habit completion
