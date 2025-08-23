@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 env:
-  FLUTTER_VERSION: '3.24.0'
+  FLUTTER_VERSION: '3.35.1'
   JAVA_VERSION: '17'
   GRADLE_VERSION: '8.1.1'
 
