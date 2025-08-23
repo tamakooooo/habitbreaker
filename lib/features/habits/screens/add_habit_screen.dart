@@ -60,6 +60,9 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
       final habitService = ref.read(habitServiceProvider);
       await habitService.createHabit(newHabit);
       
+      // 通知Riverpod提供者数据已更改，触发首页刷新
+      ref.invalidate(habitsProvider);
+      
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(AppLocalizations.of(context).habitCreated)),
@@ -94,7 +97,7 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: _startDate ?? DateTime.now(),
-      firstDate: DateTime.now(),
+      firstDate: DateTime.now().subtract(const Duration(days: 365)), // 允许选择过去一年的日期
       lastDate: DateTime.now().add(const Duration(days: 365)),
     );
     if (picked != null && picked != _startDate) {
@@ -252,11 +255,21 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
               maxLines: 3,
             ),
             const SizedBox(height: 16),
-            ListTile(
-              leading: const Icon(Icons.calendar_today),
-              title: Text(loc.startDate),
-              subtitle: Text(_startDate?.toString().split(' ')[0] ?? loc.selectDate),
-              onTap: () => _selectDate(context),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.calendar_today),
+                title: Text(loc.startDate),
+                subtitle: Text(_startDate?.toString().split(' ')[0] ?? loc.selectDate),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () => _selectDate(context),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '提示：您可以选择过去一年的任意日期作为开始时间',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Colors.grey[600],
+              ),
             ),
             ListTile(
               leading: const Icon(Icons.access_time),

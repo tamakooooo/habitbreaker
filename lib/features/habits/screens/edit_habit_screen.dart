@@ -199,25 +199,28 @@ class _EditHabitScreenState extends ConsumerState<EditHabitScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
-                  ListTile(
-                    title: Text(AppLocalizations.of(context).startDate),
-                    subtitle: Text(
-                      '${_startDate.year}-${_startDate.month}-${_startDate.day}',
+                  Card(
+                    child: ListTile(
+                      leading: const Icon(Icons.calendar_today),
+                      title: Text(AppLocalizations.of(context).startDate),
+                      subtitle: Text(
+                        '${_startDate.year}-${_startDate.month}-${_startDate.day}',
+                      ),
+                      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                      onTap: () async {
+                        final date = await showDatePicker(
+                          context: context,
+                          initialDate: _startDate,
+                          firstDate: DateTime.now().subtract(const Duration(days: 365)),
+                          lastDate: DateTime.now().add(const Duration(days: 365)),
+                        );
+                        if (date != null) {
+                          setState(() {
+                            _startDate = date;
+                          });
+                        }
+                      },
                     ),
-                    trailing: const Icon(Icons.calendar_today),
-                    onTap: () async {
-                      final date = await showDatePicker(
-                        context: context,
-                        initialDate: _startDate,
-                        firstDate: DateTime.now().subtract(const Duration(days: 365)),
-                        lastDate: DateTime.now().add(const Duration(days: 365)),
-                      );
-                      if (date != null) {
-                        setState(() {
-                          _startDate = date;
-                        });
-                      }
-                    },
                   ),
                   const SizedBox(height: 16),
                   ListTile(
