@@ -28,20 +28,8 @@ class HomeScreen extends ConsumerWidget {
               );
             }
             
-            return ListView.builder(
-              itemCount: habits.length,
-              itemBuilder: (context, index) {
-                return HabitCard(
-                  habit: habits[index],
-                  onTap: () {
-                    context.push('/habits/${habits[index].id}');
-                  },
-                  onCheck: () {
-                    // Handle habit completion
-                  },
-                );
-              },
-            );
+            // 使用自定义的可滚动卡片布局，适配不同屏幕尺寸
+            return _buildHabitCardList(context, habits);
           },
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (error, stack) => Center(child: Text('Error: $error')),
@@ -79,5 +67,57 @@ class HomeScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+  
+  Widget _buildHabitCardList(BuildContext context, List habits) {
+    // 获取屏幕宽度以决定布局方式
+    final screenWidth = MediaQuery.of(context).size.width;
+    
+    // 根据屏幕宽度调整卡片布局
+    if (screenWidth > 600) {
+      // 大屏幕设备（平板）使用双列网格布局
+      return GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 1.1,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+        ),
+        itemCount: habits.length,
+        itemBuilder: (context, index) {
+          return HabitCard(
+            habit: habits[index],
+            isCompact: true, // 在网格布局中使用紧凑版本
+            onTap: () {
+              // 使用go方法导航，避免返回时重建页面
+              context.go('/habits/${habits[index].id}');
+            },
+            onCheck: () {
+              // Handle habit completion
+            },
+          );
+        },
+      );
+    } else {
+      // 手机屏幕使用单列列表布局
+      return ListView.builder(
+        itemCount: habits.length,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 16.0),
+            child: HabitCard(
+              habit: habits[index],
+              isCompact: false, // 在列表布局中使用标准版本
+              onTap: () {
+                context.go('/habits/${habits[index].id}');
+              },
+              onCheck: () {
+                // Handle habit completion
+              },
+            ),
+          );
+        },
+      );
+    }
   }
 }

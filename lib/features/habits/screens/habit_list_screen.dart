@@ -61,14 +61,18 @@ class HabitListScreen extends ConsumerWidget {
                 );
               }
               final habit = habits[index - 1];
-              return HabitCard(
-                habit: habit,
-                onTap: () {
-                  context.go('/habits/${habit.id}');
-                },
-                onCheck: () {
-                  // Handle habit completion
-                },
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: HabitCard(
+                  habit: habit,
+                  isCompact: false, // 在列表中使用标准版本
+                  onTap: () {
+                    context.go('/habits/${habit.id}');
+                  },
+                  onCheck: () {
+                    // Handle habit completion
+                  },
+                ),
               );
             },
           );
