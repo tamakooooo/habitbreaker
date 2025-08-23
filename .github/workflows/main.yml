@@ -1,143 +1,105 @@
-name: Flutter CI/CD - Zero Difference Build System
+name: Flutter CI/CD
 
 on:
   push:
     branches: [ main, develop ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main ]
 
 env:
-  FLUTTER_VERSION: '3.35.1'
+  FLUTTER_VERSION: '3.24.0'
   JAVA_VERSION: '17'
   GRADLE_VERSION: '8.1.1'
 
 jobs:
-  env-lock:
-    runs-on: ubuntu-latest
-    outputs:
-      flutter-version: ${{ steps.env-lock.outputs.flutter-version }}
-      checksums: ${{ steps.cache-checksums.outputs.checksums }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Environment lock verification
-        id: env-lock
-        run: |
-          echo "flutter-version=$(grep "flutter" .fvmrc | sed 's/.*"flutter": "\(.*\)".*/\1/')" >> $GITHUB_OUTPUT
-      - name: Generate cache checksums
-        id: cache-checksums
-        run: |
-          echo "checksums=${{ hashFiles('**/*.lock', '**/pubspec.yaml', 'android/**/*.gradle*', '**/gradle-wrapper.properties') }}" >> $GITHUB_OUTPUT
-
   test:
-    needs: env-lock
+    name: Test
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Setup Flutter environment
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
-          cache: true
-          cache-key: flutter-${{ env.FLUTTER_VERSION }}-${{ needs.env-lock.outputs.checksums }}
-      - name: Validate build environment
-        run: ./scripts/validate_environment.sh || echo "⚠️ Skipping strict environment validation, using CI default environment"
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.pub-cache
-            build/downloads
-          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+          channel: 'stable'
+
       - name: Install dependencies
         run: flutter pub get
+
       - name: Run tests
-        run: flutter test --coverage --reporter github
+        run: flutter test --coverage --test-randomize-ordering-seed random
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage/lcov.info
 
   build-android:
-    needs: [env-lock, test]
+    name: Build Android APK
     runs-on: ubuntu-latest
+    needs: test
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Setup Flutter environment
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
-          cache: true
-          cache-key: flutter-${{ env.FLUTTER_VERSION }}-${{ needs.env-lock.outputs.checksums }}
-      - name: Setup Java environment
-        uses: actions/setup-java@v4
-        with:
-          java-version: ${{ env.JAVA_VERSION }}
-          distribution: 'temurin'
-      - name: Set environment permissions
-        run: |
-          chmod +x scripts/ci/*.sh || true
-          chmod +x scripts/validate_environment.sh || true
-      - name: Cache Gradle and dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-            ~/.pub-cache
-            build/downloads
-          key: ${{ runner.os }}-gradle-v2-${{ hashFiles('**/gradle.lockfile') }}-${{ hashFiles('**/build.gradle*') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-v2-
-      - name: Validate build environment
-        run: |
-          echo "GitHub Actions environment validation"
-          flutter --version
-          java -version || echo "Using default Java"
+          channel: 'stable'
+
       - name: Install dependencies
         run: flutter pub get
-      - name: Setup signing keys
-        uses: timheuer/base64-to-file@v1.2
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && env.KEYSTORE_BASE64 != ''
-        with:
-          fileName: 'upload-keystore.jks'
-          fileDir: 'android/app/'
-          encodedString: ${{ secrets.KEYSTORE_BASE64 }}
-      - name: Create key.properties file
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && env.KEYSTORE_BASE64 != ''
-        run: |
-          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/key.properties
-          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
-          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
-          echo "storeFile=upload-keystore.jks" >> android/key.properties
-      - name: Build APK
-        run: |
-          flutter build apk --release --build-number="${{ github.run_number }}"
-      - name: Upload APK build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: android-apk-build
-          path: build/app/outputs/flutter-apk/*.apk
-      - name: Build diagnostics and cache cleanup
-        if: always()
-        run: |
-          flutter doctor -v || true
-          flutter clean || true
 
-  release:
-    needs: build-android
-    runs-on: ubuntu-latest
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: habit-breaker-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+  build-ios:
+    name: Build iOS
+    runs-on: macos-latest
+    needs: test
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    permissions:
-      contents: write
-      actions: read
+
     steps:
-      - name: Download APK artifact
-        uses: actions/download-artifact@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
         with:
-          name: android-apk-build
-          path: ./
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build iOS
+        run: flutter build ios --release --no-codesign
+
+      - name: Upload iOS artifact
+        uses: actions/upload-artifact@v3
         with:
-          tag_name: v${{ github.run_number }}
-          name: Release v${{ github.run_number }}
-          files: app-release.apk
-          draft: false
-          prerelease: false
-          token: ${{ secrets.GITHUB_TOKEN }}
+          name: habit-breaker-ios
+          path: build/ios/Release-iphoneos/Runner.app
