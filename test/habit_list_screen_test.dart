@@ -39,12 +39,12 @@ final mockHabits = [
 
 void main() {
   testWidgets('Habit list screen displays habits', (WidgetTester tester) async {
-    // Mock the habits provider
+    // Mock the habits provider with a completed future
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          habitsProvider.overrideWith((ref) async => mockHabits),
+          habitsProvider.overrideWith((ref) => Future.value(mockHabits)),
         ],
         child: const MaterialApp(
           home: HabitListScreen(),
@@ -58,7 +58,7 @@ void main() {
             Locale('en'),
             Locale('zh'),
           ],
-          locale: Locale('zh'),
+          locale: Locale('en'), // Use English locale for GitHub Actions
         ),
       ),
     );
@@ -77,7 +77,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          habitsProvider.overrideWith((ref) async => []),
+          habitsProvider.overrideWith((ref) => Future.value([])),
         ],
         child: const MaterialApp(
           home: HabitListScreen(),
@@ -91,7 +91,7 @@ void main() {
             Locale('en'),
             Locale('zh'),
           ],
-          locale: Locale('zh'),
+          locale: Locale('en'), // Use English locale for GitHub Actions
         ),
       ),
     );
