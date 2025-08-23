@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:go_router/go_router.dart';
 
 class TestChartScreen extends StatelessWidget {
   const TestChartScreen({super.key});
@@ -11,7 +12,7 @@ class TestChartScreen extends StatelessWidget {
         title: const Text('Test Chart'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => context.pop(),
         ),
       ),
       body: Center(

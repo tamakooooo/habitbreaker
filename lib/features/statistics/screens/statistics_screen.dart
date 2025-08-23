@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:habit_breaker_app/core/providers/habit_providers.dart';
 import 'package:habit_breaker_app/localization/app_localizations.dart';
 import 'package:habit_breaker_app/widgets/habit_progress_indicator.dart';
@@ -22,7 +23,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
         title: Text(AppLocalizations.of(context).statistics),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => context.pop(),
         ),
       ),
       body: habitsAsync.when(

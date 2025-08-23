@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../../../models/habit.dart';
@@ -218,6 +219,10 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(loc.addHabit),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
       ),
       body: Form(
         key: _formKey,
