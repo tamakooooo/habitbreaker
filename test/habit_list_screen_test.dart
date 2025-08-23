@@ -100,6 +100,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Verify that empty state message is displayed
-    expect(find.text('还没有戒断。添加你的第一个戒断！'), findsOneWidget);
+    // Use the default English fallback text since GitHub Actions uses English environment
+    expect(find.text('No habits yet. Add your first habit!'), findsOneWidget);
   });
 }
