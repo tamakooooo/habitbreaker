@@ -32,21 +32,22 @@ class _HabitCardState extends State<HabitCard> with SingleTickerProviderStateMix
   @override
   void initState() {
     super.initState();
-    _updateTime();
-    
     // 初始化动画控制器
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
     
+    // 初始化_progressAnimation为默认值
     _progressAnimation = Tween<double>(
       begin: 0.0,
-      end: _progress,
+      end: 0.0,
     ).animate(CurvedAnimation(
       parent: _animationController,
       curve: Curves.easeInOut,
     ));
+    
+    _updateTime();
     
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
@@ -81,15 +82,17 @@ class _HabitCardState extends State<HabitCard> with SingleTickerProviderStateMix
       _progress = 1.0;
     }
     
-    // 更新动画值
-    _progressAnimation = Tween<double>(
-      begin: _progressAnimation.value,
-      end: _progress,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
-    _animationController.forward(from: 0.0);
+    // 更新动画值，确保动画控制器已初始化
+    if (mounted) {
+      _progressAnimation = Tween<double>(
+        begin: _progressAnimation.value,
+        end: _progress,
+      ).animate(CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOut,
+      ));
+      _animationController.forward(from: 0.0);
+    }
   }
   
   /// 根据阶段获取对应的主题颜色
