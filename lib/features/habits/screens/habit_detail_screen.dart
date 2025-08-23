@@ -71,7 +71,7 @@ class HabitDetailBody extends ConsumerWidget {
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(height: 16),
-          Text('${AppLocalizations.of(context).startDate}: ${habit.startDate.toString().split(' ').first}'),
+          Text('${AppLocalizations.of(context).startDate}: ${habit.startDate.toString()}'),
           const SizedBox(height: 16),
           ElapsedTimeCounter(habit: habit),
           const SizedBox(height: 16),

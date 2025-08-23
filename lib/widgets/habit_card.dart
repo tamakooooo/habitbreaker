@@ -329,7 +329,7 @@ class _HabitCardState extends State<HabitCard> with SingleTickerProviderStateMix
                         : Theme.of(context).textTheme.bodySmall,
                   ),
                   Text(
-                    '${widget.habit.currentStageStartDate.toString().split(' ')[0]} - ${widget.habit.currentStageEndDate.toString().split(' ')[0]}',
+                    '${widget.habit.currentStageStartDate.toString()} - ${widget.habit.currentStageEndDate.toString()}',
                     style: widget.isCompact 
                         ? Theme.of(context).textTheme.bodySmall?.copyWith(
                             fontSize: 10,
