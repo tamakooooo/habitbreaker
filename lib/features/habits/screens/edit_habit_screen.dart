@@ -95,7 +95,6 @@ class _EditHabitScreenState extends ConsumerState<EditHabitScreen> {
         name: _nameController.text,
         description: _descriptionController.text,
         startDate: startDateTime,
-        targetEndDate: Habit.calculateStageEndDate(startDateTime, _originalHabit.stage),
         icon: _selectedIcon,
       );
 
@@ -147,7 +146,7 @@ class _EditHabitScreenState extends ConsumerState<EditHabitScreen> {
             title: Text(AppLocalizations.of(context).editHabit),
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => context.pop(),
             ),
             actions: [
               IconButton(

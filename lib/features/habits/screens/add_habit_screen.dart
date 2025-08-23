@@ -21,7 +21,6 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
   DateTime? _startDate;
   TimeOfDay _startTime = TimeOfDay.now();
   String? _selectedIcon = 'MdiIcons.target';
-  HabitStage _selectedStage = HabitStage.hours24;
   TimeOfDay? _reminderTime;
   bool _isReminderEnabled = false;
   RepeatFrequency _repeatFrequency = RepeatFrequency.daily;
@@ -37,7 +36,8 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
     if (!_formKey.currentState!.validate()) return;
     if (_startDate == null) return;
 
-    final targetEndDate = Habit.calculateStageEndDate(_startDate!, _selectedStage);
+    // For simplicity, we'll set targetEndDate to 1 year from start date
+    final targetEndDate = _startDate!.add(const Duration(days: 365));
     
     final newHabit = Habit(
       id: const Uuid().v4(),
@@ -46,7 +46,7 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
       createdDate: DateTime.now(),
       startDate: _startDate!,
       targetEndDate: targetEndDate,
-      stage: _selectedStage,
+      stage: HabitStage.year1, // Default to year stage
       icon: _selectedIcon ?? 'MdiIcons.target',
       reminderTime: _reminderTime,
       isReminderEnabled: _isReminderEnabled,
@@ -74,23 +74,6 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
     }
   }
 
-  String _getStageDisplayName(BuildContext context, HabitStage stage) {
-    final loc = AppLocalizations.of(context);
-    switch (stage) {
-      case HabitStage.hours24:
-        return loc.stage24Hours;
-      case HabitStage.days3:
-        return loc.stage3Days;
-      case HabitStage.week1:
-        return loc.stage1Week;
-      case HabitStage.month1:
-        return loc.stage1Month;
-      case HabitStage.month3:
-        return '3个月';
-      case HabitStage.year1:
-        return '1年';
-    }
-  }
 
   String _getRepeatFrequencyDisplayName(BuildContext context, RepeatFrequency frequency) {
     final loc = AppLocalizations.of(context);
@@ -202,30 +185,6 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
     );
   }
 
-  Future<void> _selectStage(BuildContext context) async {
-    final stage = await showDialog<HabitStage>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(AppLocalizations.of(context).selectStage),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: HabitStage.values.map((stage) {
-              return ListTile(
-                title: Text(_getStageDisplayName(context, stage)),
-                onTap: () => Navigator.pop(context, stage),
-              );
-            }).toList(),
-          ),
-        );
-      },
-    );
-    if (stage != null) {
-      setState(() {
-        _selectedStage = stage;
-      });
-    }
-  }
 
   Future<void> _selectRepeatFrequency(BuildContext context) async {
     final frequency = await showDialog<RepeatFrequency>(
@@ -299,12 +258,6 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
               title: Text(loc.startTime),
               subtitle: Text(_startTime.format(context)),
               onTap: () => _selectTime(context),
-            ),
-            ListTile(
-              leading: const Icon(Icons.category),
-              title: Text(loc.targetStage),
-              subtitle: Text(_getStageDisplayName(context, _selectedStage)),
-              onTap: () => _selectStage(context),
             ),
             ListTile(
               leading: const Icon(Icons.emoji_events),

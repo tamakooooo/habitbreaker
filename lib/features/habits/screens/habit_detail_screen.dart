@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:habit_breaker_app/core/providers/habit_providers.dart';
 import 'package:habit_breaker_app/models/habit.dart';
 import 'package:habit_breaker_app/localization/app_localizations.dart';
-import 'package:habit_breaker_app/widgets/countdown_timer.dart';
+import 'package:habit_breaker_app/widgets/elapsed_time_counter.dart';
 
 class HabitDetailScreen extends ConsumerWidget {
   final String habitId;
@@ -46,23 +46,6 @@ class HabitDetailBody extends ConsumerWidget {
 
   const HabitDetailBody({super.key, required this.habit});
 
-  String _getStageLabel(HabitStage stage) {
-    switch (stage) {
-      case HabitStage.hours24:
-        return '24 Hours';
-      case HabitStage.days3:
-        return '3 Days';
-      case HabitStage.week1:
-        return '1 Week';
-      case HabitStage.month1:
-        return '1 Month';
-      case HabitStage.month3:
-        return '3 Months';
-      case HabitStage.year1:
-        return '1 Year';
-    }
-  }
-
   void _completeHabit(BuildContext context, WidgetRef ref) {
     // In a real implementation, you would call the habit service here
     // For now, we'll just show a success message
@@ -89,9 +72,8 @@ class HabitDetailBody extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
           Text('${AppLocalizations.of(context).startDate}: ${habit.startDate.toString().split(' ').first}'),
-          Text('${AppLocalizations.of(context).stage}: ${_getStageLabel(habit.stage)}'),
           const SizedBox(height: 16),
-          CountdownTimer(habit: habit),
+          ElapsedTimeCounter(habit: habit),
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () => _completeHabit(context, ref),
