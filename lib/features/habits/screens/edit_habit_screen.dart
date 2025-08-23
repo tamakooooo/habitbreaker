@@ -5,6 +5,7 @@ import 'package:habit_breaker_app/core/providers/habit_providers.dart';
 import 'package:habit_breaker_app/localization/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:habit_breaker_app/widgets/time_picker_with_presets.dart';
 
 class EditHabitScreen extends ConsumerStatefulWidget {
   final String habitId;
@@ -223,23 +224,18 @@ class _EditHabitScreenState extends ConsumerState<EditHabitScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  ListTile(
-                    title: Text(AppLocalizations.of(context).startTime),
-                    subtitle: Text(
-                      '${_startTime.hour.toString().padLeft(2, '0')}:${_startTime.minute.toString().padLeft(2, '0')}',
-                    ),
-                    trailing: const Icon(Icons.access_time),
-                    onTap: () async {
-                      final time = await showTimePicker(
-                        context: context,
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: TimePickerWithPresets(
                         initialTime: _startTime,
-                      );
-                      if (time != null) {
-                        setState(() {
-                          _startTime = time;
-                        });
-                      }
-                    },
+                        onTimeSelected: (newTime) {
+                          setState(() {
+                            _startTime = newTime;
+                          });
+                        },
+                      ),
+                    ),
                   ),
                 ],
               ),

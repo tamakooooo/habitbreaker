@@ -6,6 +6,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import '../../../models/habit.dart';
 import '../../../core/providers/habit_providers.dart';
 import '../../../localization/app_localizations.dart';
+import '../../../widgets/time_picker_with_presets.dart';
 
 class AddHabitScreen extends ConsumerStatefulWidget {
   const AddHabitScreen({super.key});
@@ -271,11 +272,18 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
                 color: Colors.grey[600],
               ),
             ),
-            ListTile(
-              leading: const Icon(Icons.access_time),
-              title: Text(loc.startTime),
-              subtitle: Text(_startTime.format(context)),
-              onTap: () => _selectTime(context),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: TimePickerWithPresets(
+                  initialTime: _startTime,
+                  onTimeSelected: (newTime) {
+                    setState(() {
+                      _startTime = newTime;
+                    });
+                  },
+                ),
+              ),
             ),
             ListTile(
               leading: const Icon(Icons.emoji_events),
