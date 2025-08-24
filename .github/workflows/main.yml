@@ -13,6 +13,10 @@ env:
   JAVA_VERSION: '17'
   GRADLE_VERSION: '8.1.1'
 
+permissions:
+  contents: write
+  packages: write
+
 jobs:
   test:
     name: Test
