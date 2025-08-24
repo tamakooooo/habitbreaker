@@ -5,6 +5,7 @@ import 'package:habit_breaker_app/core/providers/habit_providers.dart';
 import 'package:habit_breaker_app/models/habit.dart';
 import 'package:habit_breaker_app/localization/app_localizations.dart';
 import 'package:habit_breaker_app/widgets/elapsed_time_counter.dart';
+import 'package:logger/logger.dart';
 
 class HabitDetailScreen extends ConsumerWidget {
   final String habitId;
@@ -20,7 +21,27 @@ class HabitDetailScreen extends ConsumerWidget {
         title: Text(AppLocalizations.of(context).habitDetails),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.pop(),
+          onPressed: () {
+            // 添加日志记录
+            final logger = Logger();
+            logger.d('返回按钮被点击');
+            
+            try {
+              // 检查是否可以返回
+              if (GoRouter.of(context).canPop()) {
+                logger.d('使用context.pop()返回');
+                context.pop();
+              } else {
+                logger.d('无法pop，导航到习惯列表页面');
+                // 如果无法pop，则返回到习惯列表页面
+                context.go('/habits');
+              }
+            } catch (e, stackTrace) {
+              logger.e('返回操作出错: $e', error: e, stackTrace: stackTrace);
+              // 备选方案：直接导航到习惯列表
+              context.go('/habits');
+            }
+          },
         ),
         actions: [
           IconButton(
