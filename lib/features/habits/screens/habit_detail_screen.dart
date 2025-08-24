@@ -25,21 +25,21 @@ class HabitDetailScreen extends ConsumerWidget {
             // 添加日志记录
             final logger = Logger();
             logger.d('返回按钮被点击');
-            
+
             try {
               // 检查是否可以返回
               if (GoRouter.of(context).canPop()) {
                 logger.d('使用context.pop()返回');
                 context.pop();
               } else {
-                logger.d('无法pop，导航到习惯列表页面');
-                // 如果无法pop，则返回到习惯列表页面
-                context.go('/habits');
+                logger.d('无法pop，导航到主页');
+                // 如果无法pop，则返回到主页
+                context.go('/');
               }
             } catch (e, stackTrace) {
               logger.e('返回操作出错: $e', error: e, stackTrace: stackTrace);
-              // 备选方案：直接导航到习惯列表
-              context.go('/habits');
+              // 备选方案：直接导航到主页
+              context.go('/');
             }
           },
         ),
@@ -82,17 +82,13 @@ class HabitDetailBody extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            habit.name,
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
+          Text(habit.name, style: Theme.of(context).textTheme.headlineMedium),
           const SizedBox(height: 8),
-          Text(
-            habit.description,
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
+          Text(habit.description, style: Theme.of(context).textTheme.bodyLarge),
           const SizedBox(height: 16),
-          Text('${AppLocalizations.of(context).startDate}: ${habit.startDate.toString()}'),
+          Text(
+            '${AppLocalizations.of(context).startDate}: ${habit.startDate.toString()}',
+          ),
           const SizedBox(height: 16),
           ElapsedTimeCounter(habit: habit),
           const SizedBox(height: 16),
