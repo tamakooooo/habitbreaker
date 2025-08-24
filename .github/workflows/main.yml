@@ -114,3 +114,52 @@ jobs:
               name: `habit-breaker-${context.ref.replace('refs/tags/', '')}.apk`,
               data: fs.readFileSync('build/app/outputs/flutter-apk/app-release.apk')
             });
+
+      # Update Latest Build release for main branch pushes
+      - name: Get commit short SHA
+        id: vars
+        if: github.ref == 'refs/heads/main'
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Update Latest Build Release
+        uses: actions/github-script@v6
+        if: github.ref == 'refs/heads/main'
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const { sha_short } = process.env;
+            
+            // Try to get existing "Latest Build" release
+            let release;
+            try {
+              release = await github.rest.repos.getReleaseByTag({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag: 'latest-build'
+              });
+            } catch (error) {
+              // If release doesn't exist, create it
+              if (error.status === 404) {
+                release = await github.rest.repos.createRelease({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  tag_name: 'latest-build',
+                  name: 'Latest Build',
+                  body: 'Latest automated build from main branch',
+                  draft: false,
+                  prerelease: true
+                });
+              } else {
+                throw error;
+              }
+            }
+            
+            // Upload the APK asset
+            await github.rest.repos.uploadReleaseAsset({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: release.data.id,
+              name: `habit-breaker-latest-build-${sha_short}.apk`,
+              data: fs.readFileSync('build/app/outputs/flutter-apk/app-release.apk')
+            });
