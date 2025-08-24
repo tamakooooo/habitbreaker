@@ -21,7 +21,8 @@ class HabitCard extends StatefulWidget {
   State<HabitCard> createState() => _HabitCardState();
 }
 
-class _HabitCardState extends State<HabitCard> with SingleTickerProviderStateMixin {
+class _HabitCardState extends State<HabitCard>
+    with SingleTickerProviderStateMixin {
   late DateTime _currentTime;
   late Duration _elapsedTime;
   late double _progress;
@@ -37,18 +38,14 @@ class _HabitCardState extends State<HabitCard> with SingleTickerProviderStateMix
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
-    
+
     // 初始化_progressAnimation为默认值
-    _progressAnimation = Tween<double>(
-      begin: 0.0,
-      end: 0.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
-    
+    _progressAnimation = Tween<double>(begin: 0.0, end: 0.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+
     _updateTime();
-    
+
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         _updateTime();
@@ -66,35 +63,42 @@ class _HabitCardState extends State<HabitCard> with SingleTickerProviderStateMix
   void _updateTime() {
     _currentTime = DateTime.now();
     _elapsedTime = _currentTime.difference(widget.habit.startDate);
-    
+
     // 计算当前阶段进度
-    final stageDuration = widget.habit.currentStageEndDate.difference(widget.habit.currentStageStartDate);
-    final elapsedStageDuration = _currentTime.difference(widget.habit.currentStageStartDate);
-    
+    final stageDuration = widget.habit.currentStageEndDate.difference(
+      widget.habit.currentStageStartDate,
+    );
+    final elapsedStageDuration = _currentTime.difference(
+      widget.habit.currentStageStartDate,
+    );
+
     if (elapsedStageDuration.isNegative) {
       _progress = 0.0;
     } else {
       _progress = elapsedStageDuration.inSeconds / stageDuration.inSeconds;
     }
-    
+
     // 确保进度不超过1.0
     if (_progress > 1.0) {
       _progress = 1.0;
     }
-    
+
     // 更新动画值，确保动画控制器已初始化
     if (mounted) {
-      _progressAnimation = Tween<double>(
-        begin: _progressAnimation.value,
-        end: _progress,
-      ).animate(CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeInOut,
-      ));
+      _progressAnimation =
+          Tween<double>(
+            begin: _progressAnimation.value,
+            end: _progress,
+          ).animate(
+            CurvedAnimation(
+              parent: _animationController,
+              curve: Curves.easeInOut,
+            ),
+          );
       _animationController.forward(from: 0.0);
     }
   }
-  
+
   /// 根据阶段获取对应的主题颜色
   Color _getStageColor(HabitStage stage) {
     switch (stage) {
@@ -112,7 +116,7 @@ class _HabitCardState extends State<HabitCard> with SingleTickerProviderStateMix
         return Colors.purple; // 1年 - 紫色
     }
   }
-  
+
   /// 获取阶段的本地化名称
   String _getStageName(HabitStage stage, BuildContext context) {
     switch (stage) {
@@ -131,14 +135,12 @@ class _HabitCardState extends State<HabitCard> with SingleTickerProviderStateMix
     }
   }
 
-  
-  
   Widget _buildTimeUnit(int value, String label) {
     return Column(
       children: [
         Container(
-          padding: widget.isCompact 
-              ? const EdgeInsets.all(6) 
+          padding: widget.isCompact
+              ? const EdgeInsets.all(6)
               : const EdgeInsets.all(8),
           decoration: BoxDecoration(
             color: _getStageColor(widget.habit.stage),
@@ -168,14 +170,14 @@ class _HabitCardState extends State<HabitCard> with SingleTickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: widget.isCompact 
-          ? const EdgeInsets.all(8.0) 
+      margin: widget.isCompact
+          ? const EdgeInsets.all(8.0)
           : const EdgeInsets.symmetric(vertical: 8.0),
       child: InkWell(
         onTap: widget.onTap,
         child: Padding(
-          padding: widget.isCompact 
-              ? const EdgeInsets.all(12.0) 
+          padding: widget.isCompact
+              ? const EdgeInsets.all(12.0)
               : const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -186,15 +188,20 @@ class _HabitCardState extends State<HabitCard> with SingleTickerProviderStateMix
                   Expanded(
                     child: Text(
                       widget.habit.name,
-                      style: widget.isCompact 
-                          ? Theme.of(context).textTheme.titleMedium 
+                      style: widget.isCompact
+                          ? Theme.of(context).textTheme.titleMedium
                           : Theme.of(context).textTheme.titleLarge,
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
-                      color: _getStageColor(widget.habit.stage).withValues(alpha: 0.2),
+                      color: _getStageColor(
+                        widget.habit.stage,
+                      ).withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
@@ -211,8 +218,8 @@ class _HabitCardState extends State<HabitCard> with SingleTickerProviderStateMix
               const SizedBox(height: 8),
               Text(
                 AppLocalizations.of(context).timeElapsed,
-                style: widget.isCompact 
-                    ? Theme.of(context).textTheme.titleMedium 
+                style: widget.isCompact
+                    ? Theme.of(context).textTheme.titleMedium
                     : Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 16),
@@ -220,22 +227,10 @@ class _HabitCardState extends State<HabitCard> with SingleTickerProviderStateMix
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _buildTimeUnit(
-                      _elapsedTime.inDays,
-                      'Days',
-                    ),
-                    _buildTimeUnit(
-                      _elapsedTime.inHours % 24,
-                      'Hours',
-                    ),
-                    _buildTimeUnit(
-                      _elapsedTime.inMinutes % 60,
-                      'Minutes',
-                    ),
-                    _buildTimeUnit(
-                      _elapsedTime.inSeconds % 60,
-                      'Seconds',
-                    ),
+                    _buildTimeUnit(_elapsedTime.inDays, 'Days'),
+                    _buildTimeUnit(_elapsedTime.inHours % 24, 'Hours'),
+                    _buildTimeUnit(_elapsedTime.inMinutes % 60, 'Minutes'),
+                    _buildTimeUnit(_elapsedTime.inSeconds % 60, 'Seconds'),
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -245,25 +240,21 @@ class _HabitCardState extends State<HabitCard> with SingleTickerProviderStateMix
                 ),
                 const SizedBox(height: 12),
               ] else ...[
-                // 紧凑布局只显示天数和小时
+                // 紧凑布局显示天数、小时、分钟和秒
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _buildTimeUnit(
-                      _elapsedTime.inDays,
-                      'Days',
-                    ),
-                    _buildTimeUnit(
-                      _elapsedTime.inHours % 24,
-                      'Hours',
-                    ),
+                    _buildTimeUnit(_elapsedTime.inDays, 'Days'),
+                    _buildTimeUnit(_elapsedTime.inHours % 24, 'Hours'),
+                    _buildTimeUnit(_elapsedTime.inMinutes % 60, 'Minutes'),
+                    _buildTimeUnit(_elapsedTime.inSeconds % 60, 'Seconds'),
                   ],
                 ),
                 const SizedBox(height: 8),
                 // 紧凑布局中截断描述文本
                 Text(
-                  widget.habit.description.length > 50 
-                      ? '${widget.habit.description.substring(0, 50)}...' 
+                  widget.habit.description.length > 50
+                      ? '${widget.habit.description.substring(0, 50)}...'
                       : widget.habit.description,
                   style: Theme.of(context).textTheme.bodySmall,
                   maxLines: 2,
@@ -283,7 +274,9 @@ class _HabitCardState extends State<HabitCard> with SingleTickerProviderStateMix
                     // 进度条背景
                     Container(
                       decoration: BoxDecoration(
-                        color: _getStageColor(widget.habit.stage).withValues(alpha: 0.3),
+                        color: _getStageColor(
+                          widget.habit.stage,
+                        ).withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
@@ -293,18 +286,23 @@ class _HabitCardState extends State<HabitCard> with SingleTickerProviderStateMix
                       builder: (context, child) {
                         return FractionallySizedBox(
                           alignment: Alignment.centerLeft,
-                          widthFactor: _progressAnimation.value > 1.0 ? 1.0 : _progressAnimation.value,
+                          widthFactor: _progressAnimation.value > 1.0
+                              ? 1.0
+                              : _progressAnimation.value,
                           child: Container(
                             decoration: BoxDecoration(
-                              color: _progressAnimation.value >= 1.0 
-                                  ? Colors.green // 完成时显示绿色
+                              color: _progressAnimation.value >= 1.0
+                                  ? Colors
+                                        .green // 完成时显示绿色
                                   : _getStageColor(widget.habit.stage),
                               borderRadius: BorderRadius.circular(10),
                               boxShadow: [
                                 BoxShadow(
-                                  color: _progressAnimation.value >= 1.0 
+                                  color: _progressAnimation.value >= 1.0
                                       ? Colors.green.withValues(alpha: 0.5)
-                                      : _getStageColor(widget.habit.stage).withValues(alpha: 0.5),
+                                      : _getStageColor(
+                                          widget.habit.stage,
+                                        ).withValues(alpha: 0.5),
                                   blurRadius: 4,
                                   offset: const Offset(0, 2),
                                 ),
@@ -324,14 +322,16 @@ class _HabitCardState extends State<HabitCard> with SingleTickerProviderStateMix
                 children: [
                   Text(
                     '${(_progress * 100).toStringAsFixed(1)}% ${AppLocalizations.of(context).completed}',
-                    style: widget.isCompact 
-                        ? Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 12) 
+                    style: widget.isCompact
+                        ? Theme.of(
+                            context,
+                          ).textTheme.bodySmall?.copyWith(fontSize: 12)
                         : Theme.of(context).textTheme.bodySmall,
                   ),
                   Flexible(
                     child: Text(
                       '${widget.habit.currentStageStartDate.toString()} - ${widget.habit.currentStageEndDate.toString()}',
-                      style: widget.isCompact 
+                      style: widget.isCompact
                           ? Theme.of(context).textTheme.bodySmall?.copyWith(
                               fontSize: 10,
                               color: Colors.grey[600],
