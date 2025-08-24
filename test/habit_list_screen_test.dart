@@ -101,6 +101,6 @@ void main() {
 
     // Verify that empty state message is displayed
     // Use the default English fallback text since GitHub Actions uses English environment
-    expect(find.text('No habits yet. Add your first habit!'), findsOneWidget);
+    expect(find.text('No戒断 yet. Add your first戒断!'), findsOneWidget);
   });
 }

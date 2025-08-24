@@ -328,16 +328,20 @@ class _HabitCardState extends State<HabitCard> with SingleTickerProviderStateMix
                         ? Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 12) 
                         : Theme.of(context).textTheme.bodySmall,
                   ),
-                  Text(
-                    '${widget.habit.currentStageStartDate.toString()} - ${widget.habit.currentStageEndDate.toString()}',
-                    style: widget.isCompact 
-                        ? Theme.of(context).textTheme.bodySmall?.copyWith(
-                            fontSize: 10,
-                            color: Colors.grey[600],
-                          )
-                        : Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey[600],
-                          ),
+                  Flexible(
+                    child: Text(
+                      '${widget.habit.currentStageStartDate.toString()} - ${widget.habit.currentStageEndDate.toString()}',
+                      style: widget.isCompact 
+                          ? Theme.of(context).textTheme.bodySmall?.copyWith(
+                              fontSize: 10,
+                              color: Colors.grey[600],
+                            )
+                          : Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Colors.grey[600],
+                            ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
                   ),
                 ],
               ),
