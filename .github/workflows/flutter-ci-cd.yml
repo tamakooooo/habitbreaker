@@ -1,0 +1,203 @@
+name: Flutter CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [ main ]
+
+env:
+  FLUTTER_VERSION: '3.35.1'
+  JAVA_VERSION: '17'
+  GRADLE_VERSION: '8.1.1'
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run tests
+        run: flutter test --coverage --test-randomize-ordering-seed random
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v5
+        with:
+          file: ./coverage/lcov.info
+
+  build-android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: habit-breaker-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+      # Create release and upload APK when pushing tags
+      - name: Create Release
+        id: create_release
+        uses: actions/github-script@v6
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const tag = context.ref.replace('refs/tags/', '');
+            const { data } = await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: tag,
+              name: `Release ${tag}`,
+              draft: false,
+              prerelease: false,
+              body: `Automated release for Habit Breaker App version ${tag}`
+            });
+            return data;
+
+      - name: Upload Release Asset
+        uses: actions/github-script@v6
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const tag = context.ref.replace('refs/tags/', '');
+            await github.rest.repos.uploadReleaseAsset({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: ${{ fromJSON(steps.create_release.outputs.result).id }},
+              name: `habit-breaker-${tag}.apk`,
+              data: fs.readFileSync('build/app/outputs/flutter-apk/app-release.apk')
+            });
+
+      # Update Latest Build release for main branch pushes
+      - name: Get commit short SHA
+        id: vars
+        if: github.ref == 'refs/heads/main'
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Delete existing assets from Latest Build Release
+        uses: actions/github-script@v6
+        if: github.ref == 'refs/heads/main'
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            try {
+              // Get the existing "Latest Build" release
+              const release = await github.rest.repos.getReleaseByTag({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag: 'latest-build'
+              });
+              
+              // Delete all existing assets
+              const assets = release.data.assets;
+              for (const asset of assets) {
+                await github.rest.repos.deleteReleaseAsset({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  asset_id: asset.id
+                });
+              }
+              
+              // Update release body with new commit info
+              await github.rest.repos.updateRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id: release.data.id,
+                body: `Latest automated build from main branch\nCommit: ${{ steps.vars.outputs.sha_short }}\nBuild time: $(date -u)`
+              });
+            } catch (error) {
+              console.log('No existing release or assets to delete');
+            }
+
+      - name: Update Latest Build Release
+        uses: actions/github-script@v6
+        if: github.ref == 'refs/heads/main'
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const sha_short = '${{ steps.vars.outputs.sha_short }}';
+            
+            // Try to get existing "Latest Build" release
+            let release;
+            try {
+              release = await github.rest.repos.getReleaseByTag({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag: 'latest-build'
+              });
+            } catch (error) {
+              // If release doesn't exist, create it
+              if (error.status === 404) {
+                release = await github.rest.repos.createRelease({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  tag_name: 'latest-build',
+                  name: 'Latest Build',
+                  body: 'Latest automated build from main branch\nCommit: ' + sha_short + '\nBuild time: ' + new Date().toUTCString(),
+                  draft: false,
+                  prerelease: true
+                });
+              } else {
+                throw error;
+              }
+            }
+            
+            // Upload the APK asset
+            await github.rest.repos.uploadReleaseAsset({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: release.data.id,
+              name: `habit-breaker-latest-build-${sha_short}.apk`,
+              data: fs.readFileSync('build/app/outputs/flutter-apk/app-release.apk')
+            });

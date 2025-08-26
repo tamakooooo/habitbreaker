@@ -156,6 +156,29 @@ Test files follow the naming convention `[feature]_test.dart` and are located in
 - Test navigation between screens
 - Test internationalization with both English and Chinese locales
 
+## CI/CD Pipeline
+
+The project uses GitHub Actions for continuous integration and deployment:
+
+### Workflow File
+- `.github/workflows/flutter-ci-cd.yml` - Main CI/CD workflow
+
+### Pipeline Stages
+1. **Test Stage**: Runs all tests on Ubuntu with Flutter 3.35.1
+2. **Build Stage**: Builds the Android APK in release mode
+3. **Release Stage**: 
+   - For tag pushes (v*): Creates a new GitHub release with the APK
+   - For main branch pushes: Updates the "Latest Build" release with the new APK
+
+### Automated Release Process
+- When pushing tags matching `v*` pattern, a new release is automatically created
+- When pushing to the main branch, the "Latest Build" release is automatically updated
+- All releases include the built APK as an asset
+
+### Release Naming
+- Tag releases: `habit-breaker-{tag}.apk`
+- Latest build releases: `habit-breaker-latest-build-{commit-sha}.apk`
+
 ## Localization
 
 The app supports multiple languages through the AppLocalizations system:
