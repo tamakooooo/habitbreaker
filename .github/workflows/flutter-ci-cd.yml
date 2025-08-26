@@ -166,7 +166,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
-            const sha_short = '${{ steps.vars.outputs.sha_short }}';
+            const sha_short = process.env.sha_short || 'unknown';
             
             // Try to get existing "Latest Build" release
             let release;
@@ -191,6 +191,22 @@ jobs:
               } else {
                 throw error;
               }
+            }
+            
+            // Delete existing assets first
+            try {
+              const assets = release.data.assets;
+              for (const asset of assets) {
+                if (asset.name.startsWith('habit-breaker-latest-build-')) {
+                  await github.rest.repos.deleteReleaseAsset({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    asset_id: asset.id
+                  });
+                }
+              }
+            } catch (error) {
+              console.log('No existing assets to delete');
             }
             
             // Upload the APK asset
