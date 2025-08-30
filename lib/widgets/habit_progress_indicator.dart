@@ -64,7 +64,7 @@ class HabitProgressIndicator extends StatelessWidget {
             children: [
               if (showPercentage)
                 Text(
-                  '${(progress * 100).toInt()}%',
+                  '${(progress * 100).toStringAsFixed(2)}%',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),

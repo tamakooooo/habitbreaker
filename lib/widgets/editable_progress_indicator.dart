@@ -41,7 +41,7 @@ class _EditableProgressIndicatorState extends State<EditableProgressIndicator>
     super.initState();
     _currentProgress = widget.progress;
     _textController = TextEditingController(
-      text: (_currentProgress * 100).toStringAsFixed(1),
+      text: (_currentProgress * 100).toStringAsFixed(2),
     );
     
     // 动画控制器用于编辑状态指示
@@ -65,7 +65,7 @@ class _EditableProgressIndicatorState extends State<EditableProgressIndicator>
     if (oldWidget.progress != widget.progress && !_isEditing) {
       setState(() {
         _currentProgress = widget.progress;
-        _textController.text = (_currentProgress * 100).toStringAsFixed(1);
+        _textController.text = (_currentProgress * 100).toStringAsFixed(2);
       });
     }
   }
@@ -265,7 +265,7 @@ class _EditableProgressIndicatorState extends State<EditableProgressIndicator>
           children: [
             if (widget.showPercentage)
               Text(
-                '${(_currentProgress * 100).toInt()}%',
+                '${(_currentProgress * 100).toStringAsFixed(2)}%',
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: primaryColor,
