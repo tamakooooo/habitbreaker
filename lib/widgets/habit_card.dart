@@ -325,101 +325,42 @@ class _HabitCardState extends State<HabitCard>
                         ],
                       ),
                     ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               // 进度文本 - 只在非编辑模式下显示，避免重复
               if (!widget.isProgressEditable)
-                Text(
-                  '${(_progress * 100).toStringAsFixed(2)}% ${AppLocalizations.of(context).completed}',
-                  style: widget.isCompact
-                      ? Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 12)
-                      : Theme.of(context).textTheme.bodySmall,
-                ),
-              const SizedBox(height: 8),
-              // 开始时间和截止时间显示
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.grey[300]!),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.play_arrow,
-                          size: 16,
-                          color: Colors.green[600],
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '开始时间:',
-                          style: widget.isCompact
-                              ? Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w500,
-                                )
-                              : Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  fontWeight: FontWeight.w500,
-                                ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            '${widget.habit.currentStageStartDate.year}-${widget.habit.currentStageStartDate.month.toString().padLeft(2, '0')}-${widget.habit.currentStageStartDate.day.toString().padLeft(2, '0')} ${widget.habit.currentStageStartDate.hour.toString().padLeft(2, '0')}:${widget.habit.currentStageStartDate.minute.toString().padLeft(2, '0')}',
-                            style: widget.isCompact
-                                ? Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    fontSize: 10,
-                                    color: Colors.grey[700],
-                                  )
-                                : Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: Colors.grey[700],
-                                  ),
-                          ),
-                        ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        _getStageColor(widget.habit.stage).withValues(alpha: 0.1),
+                        _getStageColor(widget.habit.stage).withValues(alpha: 0.2),
                       ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.flag,
-                          size: 16,
-                          color: Colors.red[600],
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '截止时间:',
-                          style: widget.isCompact
-                              ? Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w500,
-                                )
-                              : Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  fontWeight: FontWeight.w500,
-                                ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            '${widget.habit.currentStageEndDate.year}-${widget.habit.currentStageEndDate.month.toString().padLeft(2, '0')}-${widget.habit.currentStageEndDate.day.toString().padLeft(2, '0')} ${widget.habit.currentStageEndDate.hour.toString().padLeft(2, '0')}:${widget.habit.currentStageEndDate.minute.toString().padLeft(2, '0')}',
-                            style: widget.isCompact
-                                ? Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    fontSize: 10,
-                                    color: Colors.grey[700],
-                                  )
-                                : Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: Colors.grey[700],
-                                  ),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: _getStageColor(widget.habit.stage).withValues(alpha: 0.3),
+                      width: 1.5,
+                    ),
+                  ),
+                  child: Text(
+                    '${(_progress * 100).toStringAsFixed(2)}% ${AppLocalizations.of(context).completed}',
+                    style: widget.isCompact
+                        ? Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: _getStageColor(widget.habit.stage),
+                          )
+                        : Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: _getStageColor(widget.habit.stage),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-              )
             ],
           ),
         ),
