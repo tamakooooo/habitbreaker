@@ -48,7 +48,9 @@ class StreakCounter extends StatelessWidget {
               const SizedBox(height: 12),
               LinearProgressIndicator(
                 value: streakCount > 0 ? 1.0 : 0.0,
-                backgroundColor: Theme.of(context).dividerColor.withAlpha((0.2 * 255).round()),
+                backgroundColor: Theme.of(
+                  context,
+                ).dividerColor.withAlpha((0.2 * 255).round()),
                 color: Colors.orange,
               ),
             ],
@@ -80,17 +82,11 @@ class _StreakItem extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           value,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         Text(
           label,
-          style: TextStyle(
-            fontSize: 12,
-            color: Theme.of(context).hintColor,
-          ),
+          style: TextStyle(fontSize: 12, color: Theme.of(context).hintColor),
         ),
       ],
     );

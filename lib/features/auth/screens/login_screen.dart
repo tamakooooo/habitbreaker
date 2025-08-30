@@ -34,20 +34,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           _emailController.text,
           _passwordController.text,
         );
-        
+
         // Update the user provider
         ref.read(userProvider.notifier).state = authService.currentUser;
         ref.read(authStateProvider.notifier).state = true;
-        
+
         // Navigate to home screen
         if (mounted) {
           Navigator.pushReplacementNamed(context, '/home');
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Login failed: $e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Login failed: $e')));
         }
       } finally {
         if (mounted) {
@@ -62,9 +62,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
-      ),
+      appBar: AppBar(title: const Text('Login')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -74,10 +72,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             children: [
               const Text(
                 'Habit Breaker',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 40),
               TextFormField(

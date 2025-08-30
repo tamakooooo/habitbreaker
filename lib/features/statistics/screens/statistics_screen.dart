@@ -36,9 +36,16 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
 
           // Calculate statistics
           final totalHabits = habits.length;
-          final completedHabits = habits.where((habit) => habit.isCompleted).length;
-          final totalStreaks = habits.fold(0, (sum, habit) => sum + habit.streakCount);
-          final averageStreak = totalHabits > 0 ? totalStreaks / totalHabits : 0;
+          final completedHabits = habits
+              .where((habit) => habit.isCompleted)
+              .length;
+          final totalStreaks = habits.fold(
+            0,
+            (sum, habit) => sum + habit.streakCount,
+          );
+          final averageStreak = totalHabits > 0
+              ? totalStreaks / totalHabits
+              : 0;
 
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
@@ -48,7 +55,9 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                 // Progress indicator
                 Center(
                   child: HabitProgressIndicator(
-                    progress: totalHabits > 0 ? completedHabits / totalHabits : 0,
+                    progress: totalHabits > 0
+                        ? completedHabits / totalHabits
+                        : 0,
                     size: 120,
                   ),
                 ),
@@ -97,13 +106,13 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                 // Chart
                 Text(
                   AppLocalizations.of(context).habitCompletionOverTime,
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 16),
-                const SizedBox(
-                  height: 200,
-                  child: LineChartSample1(),
-                ),
+                const SizedBox(height: 200, child: LineChartSample1()),
               ],
             ),
           );
@@ -204,10 +213,7 @@ class _LineChartSample1State extends State<LineChartSample1> {
             ),
           ),
         ),
-        gridData: const FlGridData(
-          show: true,
-          drawVerticalLine: true,
-        ),
+        gridData: const FlGridData(show: true, drawVerticalLine: true),
         borderData: FlBorderData(
           show: true,
           border: Border.all(color: const Color(0xff37434d)),
@@ -217,10 +223,7 @@ class _LineChartSample1State extends State<LineChartSample1> {
   }
 
   Widget bottomTitleWidgets(double value, TitleMeta meta) {
-    const style = TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: 12,
-    );
+    const style = TextStyle(fontWeight: FontWeight.bold, fontSize: 12);
     Widget text;
     switch (value.toInt()) {
       case 0:
@@ -249,17 +252,11 @@ class _LineChartSample1State extends State<LineChartSample1> {
         break;
     }
 
-    return SideTitleWidget(
-      child: text,
-      meta: meta,
-    );
+    return SideTitleWidget(child: text, meta: meta);
   }
 
   Widget leftTitleWidgets(double value, TitleMeta meta) {
-    const style = TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: 12,
-    );
+    const style = TextStyle(fontWeight: FontWeight.bold, fontSize: 12);
     return Text('${value.toInt()}', style: style, textAlign: TextAlign.center);
   }
 }

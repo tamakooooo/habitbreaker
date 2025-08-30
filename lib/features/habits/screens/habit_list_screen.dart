@@ -40,7 +40,7 @@ class HabitListScreen extends ConsumerWidget {
               child: Text(AppLocalizations.of(context).noHabitsYet),
             );
           }
-          
+
           // Calculate overall streak data
           int totalStreak = 0;
           int longestStreak = 0;
@@ -50,7 +50,7 @@ class HabitListScreen extends ConsumerWidget {
               longestStreak = habit.streakCount;
             }
           }
-          
+
           return ListView.builder(
             itemCount: habits.length + 1,
             itemBuilder: (context, index) {

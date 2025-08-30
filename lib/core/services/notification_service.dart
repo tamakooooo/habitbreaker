@@ -18,15 +18,16 @@ class NotificationService {
 
     const DarwinInitializationSettings initializationSettingsIOS =
         DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
-    );
+          requestAlertPermission: true,
+          requestBadgePermission: true,
+          requestSoundPermission: true,
+        );
 
-    const InitializationSettings initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: initializationSettingsIOS,
-    );
+    const InitializationSettings initializationSettings =
+        InitializationSettings(
+          android: initializationSettingsAndroid,
+          iOS: initializationSettingsIOS,
+        );
 
     await _notificationsPlugin.initialize(
       initializationSettings,
@@ -41,40 +42,46 @@ class NotificationService {
 
   Future<void> _createNotificationChannels() async {
     // Habit reminder channel
-    const AndroidNotificationChannel habitReminderChannel = AndroidNotificationChannel(
-      AppConstants.habitReminderChannel,
-      'Habit Reminders',
-      description: 'Notifications for habit reminders',
-      importance: Importance.high,
-    );
+    const AndroidNotificationChannel habitReminderChannel =
+        AndroidNotificationChannel(
+          AppConstants.habitReminderChannel,
+          'Habit Reminders',
+          description: 'Notifications for habit reminders',
+          importance: Importance.high,
+        );
 
     // Achievement channel
-    const AndroidNotificationChannel achievementChannel = AndroidNotificationChannel(
-      AppConstants.achievementChannel,
-      'Achievements',
-      description: 'Notifications for achievements and milestones',
-      importance: Importance.high,
-    );
+    const AndroidNotificationChannel achievementChannel =
+        AndroidNotificationChannel(
+          AppConstants.achievementChannel,
+          'Achievements',
+          description: 'Notifications for achievements and milestones',
+          importance: Importance.high,
+        );
 
     // Create channels
     await _notificationsPlugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >()
         ?.createNotificationChannel(habitReminderChannel);
     await _notificationsPlugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >()
         ?.createNotificationChannel(achievementChannel);
   }
 
   Future<void> showHabitReminder(String title, String body, {int? id}) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-      AppConstants.habitReminderChannel,
-      'Habit Reminders',
-      channelDescription: 'Notifications for habit reminders',
-      importance: Importance.max,
-      priority: Priority.high,
-      ticker: 'Habit Reminder',
-    );
+          AppConstants.habitReminderChannel,
+          'Habit Reminders',
+          channelDescription: 'Notifications for habit reminders',
+          importance: Importance.max,
+          priority: Priority.high,
+          ticker: 'Habit Reminder',
+        );
 
     const NotificationDetails platformChannelSpecifics = NotificationDetails(
       android: androidPlatformChannelSpecifics,
@@ -89,16 +96,20 @@ class NotificationService {
     );
   }
 
-  Future<void> showAchievementNotification(String title, String body, {int? id}) async {
+  Future<void> showAchievementNotification(
+    String title,
+    String body, {
+    int? id,
+  }) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-      AppConstants.achievementChannel,
-      'Achievements',
-      channelDescription: 'Notifications for achievements and milestones',
-      importance: Importance.max,
-      priority: Priority.high,
-      ticker: 'Achievement',
-    );
+          AppConstants.achievementChannel,
+          'Achievements',
+          channelDescription: 'Notifications for achievements and milestones',
+          importance: Importance.max,
+          priority: Priority.high,
+          ticker: 'Achievement',
+        );
 
     const NotificationDetails platformChannelSpecifics = NotificationDetails(
       android: androidPlatformChannelSpecifics,
@@ -121,12 +132,12 @@ class NotificationService {
   }) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-      AppConstants.habitReminderChannel,
-      'Habit Reminders',
-      channelDescription: 'Notifications for habit reminders',
-      importance: Importance.max,
-      priority: Priority.high,
-    );
+          AppConstants.habitReminderChannel,
+          'Habit Reminders',
+          channelDescription: 'Notifications for habit reminders',
+          importance: Importance.max,
+          priority: Priority.high,
+        );
 
     const NotificationDetails platformChannelSpecifics = NotificationDetails(
       android: androidPlatformChannelSpecifics,

@@ -6,7 +6,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import '../../../models/habit.dart';
 import '../../../core/providers/habit_providers.dart';
 import '../../../localization/app_localizations.dart';
-import '../../../widgets/time_picker_with_presets.dart';
+import '../../../widgets/date_time_picker.dart';
 
 class AddHabitScreen extends ConsumerStatefulWidget {
   const AddHabitScreen({super.key});
@@ -19,13 +19,13 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
-  
-  DateTime? _startDate;
-  TimeOfDay _startTime = TimeOfDay.now();
+
+  DateTime _startDateTime = DateTime.now();
   String? _selectedIcon = 'MdiIcons.target';
   TimeOfDay? _reminderTime;
   bool _isReminderEnabled = false;
   RepeatFrequency _repeatFrequency = RepeatFrequency.daily;
+  HabitStage _selectedStage = HabitStage.year1; // Default to year stage
 
   @override
   void dispose() {
@@ -36,34 +36,33 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
 
   Future<void> _saveHabit() async {
     if (!_formKey.currentState!.validate()) return;
-    if (_startDate == null) return;
 
-    // For simplicity, we'll set targetEndDate to 1 year from start date
-    final targetEndDate = _startDate!.add(const Duration(days: 365));
-    
+    // Calculate target end date based on selected stage
+    final targetEndDate = Habit.calculateStageEndDate(_startDateTime, _selectedStage);
+
     final newHabit = Habit(
       id: const Uuid().v4(),
       name: _nameController.text,
       description: _descriptionController.text,
       createdDate: DateTime.now(),
-      startDate: _startDate!,
+      startDate: _startDateTime,
       targetEndDate: targetEndDate,
-      stage: HabitStage.year1, // Default to year stage
+      stage: _selectedStage,
       icon: _selectedIcon ?? 'MdiIcons.target',
       reminderTime: _reminderTime,
       isReminderEnabled: _isReminderEnabled,
       repeatFrequency: _repeatFrequency,
-      currentStageStartDate: _startDate!,
+      currentStageStartDate: _startDateTime,
       currentStageEndDate: targetEndDate,
     );
 
     try {
       final habitService = ref.read(habitServiceProvider);
       await habitService.createHabit(newHabit);
-      
+
       // 通知Riverpod提供者数据已更改，触发首页刷新
       ref.invalidate(habitsProvider);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(AppLocalizations.of(context).habitCreated)),
@@ -79,8 +78,10 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
     }
   }
 
-
-  String _getRepeatFrequencyDisplayName(BuildContext context, RepeatFrequency frequency) {
+  String _getRepeatFrequencyDisplayName(
+    BuildContext context,
+    RepeatFrequency frequency,
+  ) {
     final loc = AppLocalizations.of(context);
     switch (frequency) {
       case RepeatFrequency.daily:
@@ -94,29 +95,21 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
     }
   }
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _startDate ?? DateTime.now(),
-      firstDate: DateTime.now().subtract(const Duration(days: 365)), // 允许选择过去一年的日期
-      lastDate: DateTime.now().add(const Duration(days: 365)),
-    );
-    if (picked != null && picked != _startDate) {
-      setState(() {
-        _startDate = picked;
-      });
-    }
-  }
-
-  Future<void> _selectTime(BuildContext context) async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: _startTime,
-    );
-    if (picked != null && picked != _startTime) {
-      setState(() {
-        _startTime = picked;
-      });
+  String _getStageDisplayName(BuildContext context, HabitStage stage) {
+    final loc = AppLocalizations.of(context);
+    switch (stage) {
+      case HabitStage.hours24:
+        return loc.stage24Hours;
+      case HabitStage.days3:
+        return loc.stage3Days;
+      case HabitStage.week1:
+        return loc.stage1Week;
+      case HabitStage.month1:
+        return loc.stage1Month;
+      case HabitStage.month3:
+        return loc.stage1Quarter;
+      case HabitStage.year1:
+        return loc.stage1Year;
     }
   }
 
@@ -165,14 +158,20 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
                 final iconData = icons[index];
                 return InkWell(
                   onTap: () {
-                    Navigator.pop(context, 'MdiIcons.${iconData['icon'].toString().substring(8)}');
+                    Navigator.pop(
+                      context,
+                      'MdiIcons.${iconData['icon'].toString().substring(8)}',
+                    );
                   },
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(iconData['icon'] as IconData, size: 32),
                       const SizedBox(height: 4),
-                      Text(iconData['name'] as String, style: const TextStyle(fontSize: 10)),
+                      Text(
+                        iconData['name'] as String,
+                        style: const TextStyle(fontSize: 10),
+                      ),
                     ],
                   ),
                 );
@@ -189,7 +188,6 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
       },
     );
   }
-
 
   Future<void> _selectRepeatFrequency(BuildContext context) async {
     final frequency = await showDialog<RepeatFrequency>(
@@ -219,7 +217,7 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(loc.addHabit),
@@ -258,37 +256,105 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
             const SizedBox(height: 16),
             Card(
               child: ListTile(
-                leading: const Icon(Icons.calendar_today),
-                title: Text(loc.startDate),
-                subtitle: Text(_startDate?.toString().split(' ')[0] ?? loc.selectDate),
-                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                onTap: () => _selectDate(context),
+                leading: const Icon(Icons.timeline),
+                title: Text(loc.targetStage),
+                subtitle: Text(_getStageDisplayName(context, _selectedStage)),
+                trailing: const Icon(Icons.arrow_drop_down),
+                onTap: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return SafeArea(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ListTile(
+                              title: Text(_getStageDisplayName(context, HabitStage.hours24)),
+                              onTap: () {
+                                setState(() {
+                                  _selectedStage = HabitStage.hours24;
+                                });
+                                Navigator.pop(context);
+                              },
+                            ),
+                            ListTile(
+                              title: Text(_getStageDisplayName(context, HabitStage.days3)),
+                              onTap: () {
+                                setState(() {
+                                  _selectedStage = HabitStage.days3;
+                                });
+                                Navigator.pop(context);
+                              },
+                            ),
+                            ListTile(
+                              title: Text(_getStageDisplayName(context, HabitStage.week1)),
+                              onTap: () {
+                                setState(() {
+                                  _selectedStage = HabitStage.week1;
+                                });
+                                Navigator.pop(context);
+                              },
+                            ),
+                            ListTile(
+                              title: Text(_getStageDisplayName(context, HabitStage.month1)),
+                              onTap: () {
+                                setState(() {
+                                  _selectedStage = HabitStage.month1;
+                                });
+                                Navigator.pop(context);
+                              },
+                            ),
+                            ListTile(
+                              title: Text(_getStageDisplayName(context, HabitStage.month3)),
+                              onTap: () {
+                                setState(() {
+                                  _selectedStage = HabitStage.month3;
+                                });
+                                Navigator.pop(context);
+                              },
+                            ),
+                            ListTile(
+                              title: Text(_getStageDisplayName(context, HabitStage.year1)),
+                              onTap: () {
+                                setState(() {
+                                  _selectedStage = HabitStage.year1;
+                                });
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                },
               ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              '提示：您可以选择过去一年的任意日期作为开始时间',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.grey[600],
-              ),
-            ),
+            const SizedBox(height: 16),
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: TimePickerWithPresets(
-                  initialTime: _startTime,
-                  onTimeSelected: (newTime) {
+                child: DateTimePicker(
+                  initialDateTime: _startDateTime,
+                  onDateTimeSelected: (newDateTime) {
                     setState(() {
-                      _startTime = newTime;
+                      _startDateTime = newDateTime;
                     });
                   },
                 ),
               ),
             ),
+            const SizedBox(height: 8),
+            Text(
+              '提示：您可以选择过去一年的任意日期作为开始时间',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+            ),
             ListTile(
               leading: const Icon(Icons.emoji_events),
               title: const Text('图标'),
-              subtitle: Text(_selectedIcon?.replaceAll('MdiIcons.', '') ?? '目标'),
+              subtitle: Text(
+                _selectedIcon?.replaceAll('MdiIcons.', '') ?? '目标',
+              ),
               onTap: () async {
                 final icon = await _selectIcon(context);
                 if (icon != null) {
@@ -311,14 +377,18 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
               ListTile(
                 leading: const Icon(Icons.notifications),
                 title: Text(loc.reminderTime),
-                subtitle: Text(_reminderTime?.format(context) ?? loc.setReminder),
+                subtitle: Text(
+                  _reminderTime?.format(context) ?? loc.setReminder,
+                ),
                 onTap: () => _selectReminderTime(context),
               ),
             ],
             ListTile(
               leading: const Icon(Icons.repeat),
               title: Text(loc.repeatFrequency),
-              subtitle: Text(_getRepeatFrequencyDisplayName(context, _repeatFrequency)),
+              subtitle: Text(
+                _getRepeatFrequencyDisplayName(context, _repeatFrequency),
+              ),
               onTap: () => _selectRepeatFrequency(context),
             ),
             const SizedBox(height: 32),

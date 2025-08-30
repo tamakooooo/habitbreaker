@@ -13,18 +13,9 @@ import 'package:habit_breaker_app/screens/icon_demo_screen.dart';
 
 final router = GoRouter(
   routes: [
-    GoRoute(
-      path: '/',
-      builder: (context, state) => const HomeScreen(),
-    ),
-    GoRoute(
-      path: '/login',
-      builder: (context, state) => const LoginScreen(),
-    ),
-    GoRoute(
-      path: '/signup',
-      builder: (context, state) => const SignupScreen(),
-    ),
+    GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
+    GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
+    GoRoute(path: '/signup', builder: (context, state) => const SignupScreen()),
     GoRoute(
       path: '/habits',
       builder: (context, state) => const HabitListScreen(),

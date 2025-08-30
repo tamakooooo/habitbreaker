@@ -22,10 +22,7 @@ void main() {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: [
-            Locale('en'),
-            Locale('zh'),
-          ],
+          supportedLocales: [Locale('en'), Locale('zh')],
           locale: Locale('zh'), // 使用中文locale
         ),
       ),
@@ -35,7 +32,9 @@ void main() {
     expect(find.text('戒断不良习惯'), findsOneWidget);
   });
 
-  testWidgets('Home screen has navigation buttons', (WidgetTester tester) async {
+  testWidgets('Home screen has navigation buttons', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(
       const ProviderScope(
         child: MaterialApp(
@@ -46,10 +45,7 @@ void main() {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: [
-            Locale('en'),
-            Locale('zh'),
-          ],
+          supportedLocales: [Locale('en'), Locale('zh')],
           locale: Locale('zh'), // 使用中文locale
         ),
       ),

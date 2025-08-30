@@ -22,7 +22,7 @@ class StorageService {
   // Get all habits
   Future<List<Habit>> getHabits() async {
     if (_habitsBox == null) throw Exception('StorageService not initialized');
-    
+
     final habits = <Habit>[];
     for (var key in _habitsBox!.keys) {
       final habitData = _habitsBox!.get(key);
@@ -42,7 +42,7 @@ class StorageService {
   // Get a specific habit by ID
   Future<Habit?> getHabitById(String id) async {
     if (_habitsBox == null) throw Exception('StorageService not initialized');
-    
+
     final habitData = _habitsBox!.get(id);
     if (habitData is Map) {
       try {
@@ -59,7 +59,7 @@ class StorageService {
   // Save a habit
   Future<void> saveHabit(Habit habit) async {
     if (_habitsBox == null) throw Exception('StorageService not initialized');
-    
+
     final habitData = habit.toJson()..remove('id');
     await _habitsBox!.put(habit.id, habitData);
   }

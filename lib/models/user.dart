@@ -9,13 +9,13 @@ part 'user.g.dart';
 class User extends Equatable {
   @HiveField(0)
   final String id;
-  
+
   @HiveField(1)
   final String email;
-  
+
   @HiveField(2)
   final String name;
-  
+
   @HiveField(3)
   final String? profilePicture;
 

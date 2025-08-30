@@ -2,12 +2,15 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:habit_breaker_app/models/habit.dart';
 import 'package:habit_breaker_app/localization/app_localizations.dart';
+import 'package:habit_breaker_app/widgets/habit_progress_indicator.dart';
 
 class HabitCard extends StatefulWidget {
   final Habit habit;
   final VoidCallback onTap;
   final VoidCallback onCheck;
   final bool isCompact; // 用于在网格布局中显示紧凑版本
+  final bool isProgressEditable; // 是否启用进度条编辑功能
+  final Function(double)? onProgressChanged; // 进度更新回调
 
   const HabitCard({
     super.key,
@@ -15,6 +18,8 @@ class HabitCard extends StatefulWidget {
     required this.onTap,
     required this.onCheck,
     this.isCompact = false,
+    this.isProgressEditable = false,
+    this.onProgressChanged,
   });
 
   @override
@@ -262,89 +267,117 @@ class _HabitCardState extends State<HabitCard>
                 ),
                 const SizedBox(height: 8),
               ],
-              // 美观的自定义进度条，带有阶段主题颜色和动画效果
-              Container(
-                height: widget.isCompact ? 16 : 20,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Stack(
-                  children: [
-                    // 进度条背景
-                    Container(
+              // 使用新的可编辑进度条组件
+              widget.isProgressEditable
+                  ? HabitProgressIndicator(
+                      progress: _progress,
+                      size: widget.isCompact ? 60 : 80,
+                      color: _getStageColor(widget.habit.stage),
+                      isEditable: true,
+                      onProgressChanged: widget.onProgressChanged,
+                      label: AppLocalizations.of(context).completed,
+                      showPercentage: true,
+                    )
+                  : Container(
+                      height: widget.isCompact ? 16 : 20,
                       decoration: BoxDecoration(
-                        color: _getStageColor(
-                          widget.habit.stage,
-                        ).withValues(alpha: 0.3),
+                        color: Colors.grey[300],
                         borderRadius: BorderRadius.circular(10),
                       ),
-                    ),
-                    // 进度条前景，带有动画效果
-                    AnimatedBuilder(
-                      animation: _animationController,
-                      builder: (context, child) {
-                        return FractionallySizedBox(
-                          alignment: Alignment.centerLeft,
-                          widthFactor: _progressAnimation.value > 1.0
-                              ? 1.0
-                              : _progressAnimation.value,
-                          child: Container(
+                      child: Stack(
+                        children: [
+                          // 进度条背景
+                          Container(
                             decoration: BoxDecoration(
-                              color: _progressAnimation.value >= 1.0
-                                  ? Colors
-                                        .green // 完成时显示绿色
-                                  : _getStageColor(widget.habit.stage),
+                              color: _getStageColor(
+                                widget.habit.stage,
+                              ).withValues(alpha: 0.3),
                               borderRadius: BorderRadius.circular(10),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: _progressAnimation.value >= 1.0
-                                      ? Colors.green.withValues(alpha: 0.5)
-                                      : _getStageColor(
-                                          widget.habit.stage,
-                                        ).withValues(alpha: 0.5),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
                             ),
                           ),
-                        );
-                      },
+                          // 进度条前景，带有动画效果
+                          AnimatedBuilder(
+                            animation: _animationController,
+                            builder: (context, child) {
+                              return FractionallySizedBox(
+                                alignment: Alignment.centerLeft,
+                                widthFactor: _progressAnimation.value > 1.0
+                                    ? 1.0
+                                    : _progressAnimation.value,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: _progressAnimation.value >= 1.0
+                                        ? Colors
+                                              .green // 完成时显示绿色
+                                        : _getStageColor(widget.habit.stage),
+                                    borderRadius: BorderRadius.circular(10),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: _progressAnimation.value >= 1.0
+                                            ? Colors.green.withValues(alpha: 0.5)
+                                            : _getStageColor(
+                                                widget.habit.stage,
+                                              ).withValues(alpha: 0.5),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+              const SizedBox(height: 8),
+              // 进度文本 - 只在非编辑模式下显示，避免重复
+              if (!widget.isProgressEditable)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '${(_progress * 100).toStringAsFixed(1)}% ${AppLocalizations.of(context).completed}',
+                      style: widget.isCompact
+                          ? Theme.of(
+                              context,
+                            ).textTheme.bodySmall?.copyWith(fontSize: 12)
+                          : Theme.of(context).textTheme.bodySmall,
+                    ),
+                    Flexible(
+                      child: Text(
+                        '${widget.habit.currentStageStartDate.toString()} - ${widget.habit.currentStageEndDate.toString()}',
+                        style: widget.isCompact
+                            ? Theme.of(context).textTheme.bodySmall?.copyWith(
+                                fontSize: 10,
+                                color: Colors.grey[600],
+                              )
+                            : Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Colors.grey[600],
+                              ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 8),
-              // 进度文本
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '${(_progress * 100).toStringAsFixed(1)}% ${AppLocalizations.of(context).completed}',
+              // 在编辑模式下显示阶段日期信息
+              if (widget.isProgressEditable)
+                Center(
+                  child: Text(
+                    '${widget.habit.currentStageStartDate.toString()} - ${widget.habit.currentStageEndDate.toString()}',
                     style: widget.isCompact
-                        ? Theme.of(
-                            context,
-                          ).textTheme.bodySmall?.copyWith(fontSize: 12)
-                        : Theme.of(context).textTheme.bodySmall,
+                        ? Theme.of(context).textTheme.bodySmall?.copyWith(
+                            fontSize: 10,
+                            color: Colors.grey[600],
+                          )
+                        : Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Colors.grey[600],
+                          ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
-                  Flexible(
-                    child: Text(
-                      '${widget.habit.currentStageStartDate.toString()} - ${widget.habit.currentStageEndDate.toString()}',
-                      style: widget.isCompact
-                          ? Theme.of(context).textTheme.bodySmall?.copyWith(
-                              fontSize: 10,
-                              color: Colors.grey[600],
-                            )
-                          : Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.grey[600],
-                            ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
-                  ),
-                ],
-              ),
+                )
             ],
           ),
         ),

@@ -39,20 +39,20 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           _passwordController.text,
           _nameController.text,
         );
-        
+
         // Update the user provider
         ref.read(userProvider.notifier).state = authService.currentUser;
         ref.read(authStateProvider.notifier).state = true;
-        
+
         // Navigate to home screen
         if (mounted) {
           Navigator.pushReplacementNamed(context, '/home');
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Sign up failed: $e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Sign up failed: $e')));
         }
       } finally {
         if (mounted) {
@@ -67,9 +67,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sign Up'),
-      ),
+      appBar: AppBar(title: const Text('Sign Up')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -79,10 +77,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
             children: [
               const Text(
                 'Create Account',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 40),
               TextFormField(

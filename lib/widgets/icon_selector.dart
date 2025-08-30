@@ -117,7 +117,7 @@ class _IconSelectorState extends State<IconSelector> {
             itemBuilder: (context, index) {
               final iconData = _iconCategories[_selectedCategory]![index];
               final isSelected = _selectedIcon == iconData['name'];
-              
+
               return GestureDetector(
                 onTap: () {
                   setState(() {
@@ -127,11 +127,13 @@ class _IconSelectorState extends State<IconSelector> {
                 },
                 child: Container(
                   decoration: BoxDecoration(
-                    color: isSelected ? Theme.of(context).primaryColor.withValues(alpha: 0.2) : Colors.transparent,
+                    color: isSelected
+                        ? Theme.of(context).primaryColor.withValues(alpha: 0.2)
+                        : Colors.transparent,
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: isSelected 
-                          ? Theme.of(context).primaryColor 
+                      color: isSelected
+                          ? Theme.of(context).primaryColor
                           : Colors.grey.withValues(alpha: 0.5),
                     ),
                   ),

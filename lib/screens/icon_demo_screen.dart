@@ -14,9 +14,7 @@ class _IconDemoScreenState extends State<IconDemoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Icon Selector Demo'),
-      ),
+      appBar: AppBar(title: const Text('Icon Selector Demo')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -33,10 +31,7 @@ class _IconDemoScreenState extends State<IconDemoScreen> {
                 color: Colors.grey[200],
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Text(
-                _selectedIcon,
-                style: const TextStyle(fontSize: 16),
-              ),
+              child: Text(_selectedIcon, style: const TextStyle(fontSize: 16)),
             ),
             const SizedBox(height: 24),
             const Text(

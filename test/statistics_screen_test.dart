@@ -20,7 +20,9 @@ final mockHabits = [
     startDate: DateTime.now().subtract(const Duration(days: 5)),
     stage: HabitStage.hours24,
     currentStageStartDate: DateTime.now().subtract(const Duration(days: 5)),
-    currentStageEndDate: DateTime.now().subtract(const Duration(days: 5)).add(const Duration(hours: 24)),
+    currentStageEndDate: DateTime.now()
+        .subtract(const Duration(days: 5))
+        .add(const Duration(hours: 24)),
     icon: 'MdiIcons.target',
   ),
   Habit(
@@ -34,20 +36,22 @@ final mockHabits = [
     startDate: DateTime.now().subtract(const Duration(days: 10)),
     stage: HabitStage.hours24,
     currentStageStartDate: DateTime.now().subtract(const Duration(days: 10)),
-    currentStageEndDate: DateTime.now().subtract(const Duration(days: 10)).add(const Duration(hours: 24)),
+    currentStageEndDate: DateTime.now()
+        .subtract(const Duration(days: 10))
+        .add(const Duration(hours: 24)),
     icon: 'MdiIcons.book',
   ),
 ];
 
 void main() {
-  testWidgets('Statistics screen displays habit statistics', (WidgetTester tester) async {
+  testWidgets('Statistics screen displays habit statistics', (
+    WidgetTester tester,
+  ) async {
     // Mock the habits provider
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          habitsProvider.overrideWith((ref) async => mockHabits),
-        ],
+        overrides: [habitsProvider.overrideWith((ref) async => mockHabits)],
         child: const MaterialApp(
           home: StatisticsScreen(),
           localizationsDelegates: [
@@ -56,10 +60,7 @@ void main() {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: [
-            Locale('en'),
-            Locale('zh'),
-          ],
+          supportedLocales: [Locale('en'), Locale('zh')],
           locale: Locale('zh'),
         ),
       ),
@@ -75,14 +76,14 @@ void main() {
     expect(find.text('平均连续天数'), findsWidgets); // Average streak title
   });
 
-  testWidgets('Statistics screen shows empty state', (WidgetTester tester) async {
+  testWidgets('Statistics screen shows empty state', (
+    WidgetTester tester,
+  ) async {
     // Mock the habits provider with empty list
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          habitsProvider.overrideWith((ref) async => []),
-        ],
+        overrides: [habitsProvider.overrideWith((ref) async => [])],
         child: const MaterialApp(
           home: StatisticsScreen(),
           localizationsDelegates: [
@@ -91,10 +92,7 @@ void main() {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: [
-            Locale('en'),
-            Locale('zh'),
-          ],
+          supportedLocales: [Locale('en'), Locale('zh')],
           locale: Locale('zh'),
         ),
       ),

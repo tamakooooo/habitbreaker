@@ -64,9 +64,9 @@ class _CountdownTimerState extends State<CountdownTimer> {
             const SizedBox(height: 8),
             Text(
               '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                fontFamily: 'monospace',
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineMedium?.copyWith(fontFamily: 'monospace'),
             ),
           ],
         ),

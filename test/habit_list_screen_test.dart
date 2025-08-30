@@ -19,7 +19,9 @@ final mockHabits = [
     startDate: DateTime.now().subtract(const Duration(days: 5)),
     stage: HabitStage.hours24,
     currentStageStartDate: DateTime.now().subtract(const Duration(days: 5)),
-    currentStageEndDate: DateTime.now().subtract(const Duration(days: 5)).add(const Duration(hours: 24)),
+    currentStageEndDate: DateTime.now()
+        .subtract(const Duration(days: 5))
+        .add(const Duration(hours: 24)),
     icon: 'MdiIcons.target',
   ),
   Habit(
@@ -32,7 +34,9 @@ final mockHabits = [
     startDate: DateTime.now().subtract(const Duration(days: 10)),
     stage: HabitStage.hours24,
     currentStageStartDate: DateTime.now().subtract(const Duration(days: 10)),
-    currentStageEndDate: DateTime.now().subtract(const Duration(days: 10)).add(const Duration(hours: 24)),
+    currentStageEndDate: DateTime.now()
+        .subtract(const Duration(days: 10))
+        .add(const Duration(hours: 24)),
     icon: 'MdiIcons.book',
   ),
 ];
@@ -54,10 +58,7 @@ void main() {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: [
-            Locale('en'),
-            Locale('zh'),
-          ],
+          supportedLocales: [Locale('en'), Locale('zh')],
           locale: Locale('en'), // Use English locale for GitHub Actions
         ),
       ),
@@ -71,14 +72,14 @@ void main() {
     expect(find.text('Read Books'), findsOneWidget);
   });
 
-  testWidgets('Habit list screen shows empty state', (WidgetTester tester) async {
+  testWidgets('Habit list screen shows empty state', (
+    WidgetTester tester,
+  ) async {
     // Mock the habits provider with empty list
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          habitsProvider.overrideWith((ref) => Future.value([])),
-        ],
+        overrides: [habitsProvider.overrideWith((ref) => Future.value([]))],
         child: const MaterialApp(
           home: HabitListScreen(),
           localizationsDelegates: [
@@ -87,10 +88,7 @@ void main() {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: [
-            Locale('en'),
-            Locale('zh'),
-          ],
+          supportedLocales: [Locale('en'), Locale('zh')],
           locale: Locale('en'), // Use English locale for GitHub Actions
         ),
       ),

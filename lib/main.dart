@@ -14,26 +14,24 @@ import 'package:habit_breaker_app/localization/app_localizations_delegate.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Initialize timezone data
   tz.initializeTimeZones();
-  
+
   // Initialize Hive
   await initHive();
-  
+
   // Initialize storage service
   final storageService = StorageService();
   await storageService.init();
-  
+
   // Initialize notification service
   final notificationService = NotificationService();
   await notificationService.init();
-  
+
   // Initialize background task service
-  await Workmanager().initialize(
-    callbackDispatcher,
-  );
-  
+  await Workmanager().initialize(callbackDispatcher);
+
   // Register periodic tasks
   await Workmanager().registerPeriodicTask(
     'checkHabitsTask',
@@ -41,19 +39,15 @@ void main() async {
     frequency: const Duration(hours: 1),
     initialDelay: const Duration(minutes: 1),
   );
-  
+
   await Workmanager().registerPeriodicTask(
     'dailyResetTask',
     'dailyReset',
     frequency: const Duration(hours: 24),
     initialDelay: const Duration(hours: 1),
   );
-  
-  runApp(
-    const ProviderScope(
-      child: MyApp(),
-    ),
-  );
+
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends ConsumerWidget {

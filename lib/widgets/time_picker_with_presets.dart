@@ -28,7 +28,7 @@ class _TimePickerWithPresetsState extends State<TimePickerWithPresets> {
       context: context,
       initialTime: _selectedTime,
     );
-    
+
     if (picked != null && picked != _selectedTime) {
       setState(() {
         _selectedTime = picked;
@@ -46,7 +46,9 @@ class _TimePickerWithPresetsState extends State<TimePickerWithPresets> {
         // 时间选择
         ListTile(
           title: const Text('选择时间'),
-          subtitle: Text('${_selectedTime.hour.toString().padLeft(2, '0')}:${_selectedTime.minute.toString().padLeft(2, '0')}'),
+          subtitle: Text(
+            '${_selectedTime.hour.toString().padLeft(2, '0')}:${_selectedTime.minute.toString().padLeft(2, '0')}',
+          ),
           trailing: const Icon(Icons.access_time),
           onTap: _showTimePicker,
         ),

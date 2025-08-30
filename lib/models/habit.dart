@@ -115,7 +115,8 @@ class Habit extends Equatable {
       streakCount: streakCount ?? this.streakCount,
       completionDates: completionDates ?? this.completionDates,
       stage: stage ?? this.stage,
-      currentStageStartDate: currentStageStartDate ?? this.currentStageStartDate,
+      currentStageStartDate:
+          currentStageStartDate ?? this.currentStageStartDate,
       currentStageEndDate: currentStageEndDate ?? this.currentStageEndDate,
       icon: icon ?? this.icon,
       reminderTime: reminderTime ?? this.reminderTime,
@@ -151,12 +152,14 @@ class Habit extends Equatable {
       'targetEndDate': targetEndDate.toIso8601String(),
       'isCompleted': isCompleted,
       'streakCount': streakCount,
-      'completionDates': completionDates.map((e) => e.toIso8601String()).toList(),
+      'completionDates': completionDates
+          .map((e) => e.toIso8601String())
+          .toList(),
       'stage': stage.name,
       'currentStageStartDate': currentStageStartDate.toIso8601String(),
       'currentStageEndDate': currentStageEndDate.toIso8601String(),
       'icon': icon,
-      'reminderTime': reminderTime != null 
+      'reminderTime': reminderTime != null
           ? {'hour': reminderTime!.hour, 'minute': reminderTime!.minute}
           : null,
       'isReminderEnabled': isReminderEnabled,
@@ -174,9 +177,11 @@ class Habit extends Equatable {
       targetEndDate: DateTime.parse(json['targetEndDate']),
       isCompleted: json['isCompleted'] ?? false,
       streakCount: json['streakCount'] ?? 0,
-      completionDates: (json['completionDates'] as List?)
-          ?.map((e) => DateTime.parse(e as String))
-          .toList() ?? [],
+      completionDates:
+          (json['completionDates'] as List?)
+              ?.map((e) => DateTime.parse(e as String))
+              .toList() ??
+          [],
       stage: HabitStage.values.firstWhere(
         (e) => e.name == json['stage'],
         orElse: () => HabitStage.hours24,
@@ -200,21 +205,21 @@ class Habit extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        name,
-        description,
-        createdDate,
-        startDate,
-        targetEndDate,
-        isCompleted,
-        streakCount,
-        completionDates,
-        stage,
-        currentStageStartDate,
-        currentStageEndDate,
-        icon,
-        reminderTime,
-        isReminderEnabled,
-        repeatFrequency,
-      ];
+    id,
+    name,
+    description,
+    createdDate,
+    startDate,
+    targetEndDate,
+    isCompleted,
+    streakCount,
+    completionDates,
+    stage,
+    currentStageStartDate,
+    currentStageEndDate,
+    icon,
+    reminderTime,
+    isReminderEnabled,
+    repeatFrequency,
+  ];
 }

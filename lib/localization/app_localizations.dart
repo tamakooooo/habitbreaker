@@ -71,6 +71,8 @@ class AppLocalizations {
       'error': 'Error',
       'select_date': 'Select date',
       'save_habit': 'Save Habit',
+      'select_start_date_and_time': 'Select Start Date and Time',
+      'selected_date_time': 'Selected Date and Time',
     },
     'zh': {
       'app_name': '戒断不良习惯',
@@ -125,69 +127,159 @@ class AppLocalizations {
       'error': '错误',
       'select_date': '选择日期',
       'save_habit': '保存习惯',
+      'select_start_date_and_time': '选择开始日期和时间',
+      'selected_date_time': '已选择的日期和时间',
     },
   };
 
-  String get appName => _localizedValues[locale.languageCode]?['app_name'] ?? 'Habit Breaker';
-  String get welcomeMessage => _localizedValues[locale.languageCode]?['welcome_message'] ?? 'Welcome to Habit Breaker App!';
-  String get startBuildingHabits => _localizedValues[locale.languageCode]?['start_building_habits'] ?? 'Start building better habits today.';
-  String get viewMyHabits => _localizedValues[locale.languageCode]?['view_my_habits'] ?? 'View My Habits';
-  String get viewStatistics => _localizedValues[locale.languageCode]?['view_statistics'] ?? 'View Statistics';
-  String get myHabits => _localizedValues[locale.languageCode]?['my_habits'] ?? 'My Habits';
-  String get addHabit => _localizedValues[locale.languageCode]?['add_habit'] ?? 'Add Habit';
-  String get noHabitsYet => _localizedValues[locale.languageCode]?['no_habits_yet'] ?? 'No habits yet. Add your first habit!';
-  String get habitDetails => _localizedValues[locale.languageCode]?['habit_details'] ?? 'Habit Details';
-  String get statistics => _localizedValues[locale.languageCode]?['statistics'] ?? 'Statistics';
-  String get totalHabits => _localizedValues[locale.languageCode]?['total_habits'] ?? 'Total Habits';
-  String get completed => _localizedValues[locale.languageCode]?['completed'] ?? 'Completed';
-  String get totalStreaks => _localizedValues[locale.languageCode]?['total_streaks'] ?? 'Total Streaks';
-  String get avgStreak => _localizedValues[locale.languageCode]?['avg_streak'] ?? 'Avg. Streak';
-  String get habitCompletionOverTime => _localizedValues[locale.languageCode]?['habit_completion_over_time'] ?? 'Habit Completion Over Time';
-  String get login => _localizedValues[locale.languageCode]?['login'] ?? 'Login';
-  String get signup => _localizedValues[locale.languageCode]?['signup'] ?? 'Sign Up';
-  String get email => _localizedValues[locale.languageCode]?['email'] ?? 'Email';
-  String get password => _localizedValues[locale.languageCode]?['password'] ?? 'Password';
-  String get confirmPassword => _localizedValues[locale.languageCode]?['confirm_password'] ?? 'Confirm Password';
-  String get fullName => _localizedValues[locale.languageCode]?['full_name'] ?? 'Full Name';
-  String get dontHaveAccount => _localizedValues[locale.languageCode]?['dont_have_account'] ?? 'Don\'t have an account? Sign up';
-  String get alreadyHaveAccount => _localizedValues[locale.languageCode]?['already_have_account'] ?? 'Already have an account? Login';
-  String get continueAsGuest => _localizedValues[locale.languageCode]?['continue_as_guest'] ?? 'Continue as Guest';
-  String get habitName => _localizedValues[locale.languageCode]?['habit_name'] ?? 'Habit Name';
-  String get description => _localizedValues[locale.languageCode]?['description'] ?? 'Description';
-  String get targetEndDate => _localizedValues[locale.languageCode]?['target_end_date'] ?? 'Target End Date';
-  String get notSelected => _localizedValues[locale.languageCode]?['not_selected'] ?? 'Not selected';
+  String get appName =>
+      _localizedValues[locale.languageCode]?['app_name'] ?? 'Habit Breaker';
+  String get welcomeMessage =>
+      _localizedValues[locale.languageCode]?['welcome_message'] ??
+      'Welcome to Habit Breaker App!';
+  String get startBuildingHabits =>
+      _localizedValues[locale.languageCode]?['start_building_habits'] ??
+      'Start building better habits today.';
+  String get viewMyHabits =>
+      _localizedValues[locale.languageCode]?['view_my_habits'] ??
+      'View My Habits';
+  String get viewStatistics =>
+      _localizedValues[locale.languageCode]?['view_statistics'] ??
+      'View Statistics';
+  String get myHabits =>
+      _localizedValues[locale.languageCode]?['my_habits'] ?? 'My Habits';
+  String get addHabit =>
+      _localizedValues[locale.languageCode]?['add_habit'] ?? 'Add Habit';
+  String get noHabitsYet =>
+      _localizedValues[locale.languageCode]?['no_habits_yet'] ??
+      'No habits yet. Add your first habit!';
+  String get habitDetails =>
+      _localizedValues[locale.languageCode]?['habit_details'] ??
+      'Habit Details';
+  String get statistics =>
+      _localizedValues[locale.languageCode]?['statistics'] ?? 'Statistics';
+  String get totalHabits =>
+      _localizedValues[locale.languageCode]?['total_habits'] ?? 'Total Habits';
+  String get completed =>
+      _localizedValues[locale.languageCode]?['completed'] ?? 'Completed';
+  String get totalStreaks =>
+      _localizedValues[locale.languageCode]?['total_streaks'] ??
+      'Total Streaks';
+  String get avgStreak =>
+      _localizedValues[locale.languageCode]?['avg_streak'] ?? 'Avg. Streak';
+  String get habitCompletionOverTime =>
+      _localizedValues[locale.languageCode]?['habit_completion_over_time'] ??
+      'Habit Completion Over Time';
+  String get login =>
+      _localizedValues[locale.languageCode]?['login'] ?? 'Login';
+  String get signup =>
+      _localizedValues[locale.languageCode]?['signup'] ?? 'Sign Up';
+  String get email =>
+      _localizedValues[locale.languageCode]?['email'] ?? 'Email';
+  String get password =>
+      _localizedValues[locale.languageCode]?['password'] ?? 'Password';
+  String get confirmPassword =>
+      _localizedValues[locale.languageCode]?['confirm_password'] ??
+      'Confirm Password';
+  String get fullName =>
+      _localizedValues[locale.languageCode]?['full_name'] ?? 'Full Name';
+  String get dontHaveAccount =>
+      _localizedValues[locale.languageCode]?['dont_have_account'] ??
+      'Don\'t have an account? Sign up';
+  String get alreadyHaveAccount =>
+      _localizedValues[locale.languageCode]?['already_have_account'] ??
+      'Already have an account? Login';
+  String get continueAsGuest =>
+      _localizedValues[locale.languageCode]?['continue_as_guest'] ??
+      'Continue as Guest';
+  String get habitName =>
+      _localizedValues[locale.languageCode]?['habit_name'] ?? 'Habit Name';
+  String get description =>
+      _localizedValues[locale.languageCode]?['description'] ?? 'Description';
+  String get targetEndDate =>
+      _localizedValues[locale.languageCode]?['target_end_date'] ??
+      'Target End Date';
+  String get notSelected =>
+      _localizedValues[locale.languageCode]?['not_selected'] ?? 'Not selected';
   String get save => _localizedValues[locale.languageCode]?['save'] ?? 'Save';
-  String get markCompletedToday => _localizedValues[locale.languageCode]?['mark_completed_today'] ?? 'Mark as Completed Today';
-  String get startDate => _localizedValues[locale.languageCode]?['start_date'] ?? 'Start Date';
-  String get daysRemaining => _localizedValues[locale.languageCode]?['days_remaining'] ?? 'Days Remaining';
-  String get timeRemaining => _localizedValues[locale.languageCode]?['time_remaining'] ?? 'Time Remaining';
-  String get stage => _localizedValues[locale.languageCode]?['stage'] ?? 'Stage';
-  String get selectStage => _localizedValues[locale.languageCode]?['select_stage'] ?? 'Select Stage';
-  String get stage24Hours => _localizedValues[locale.languageCode]?['stage_24_hours'] ?? '24 Hours';
-  String get stage3Days => _localizedValues[locale.languageCode]?['stage_3_days'] ?? '3 Days';
-  String get stage1Week => _localizedValues[locale.languageCode]?['stage_1_week'] ?? '1 Week';
-  String get stage1Month => _localizedValues[locale.languageCode]?['stage_1_month'] ?? '1 Month';
-  String get stage1Quarter => _localizedValues[locale.languageCode]?['stage_1_quarter'] ?? '1 Quarter';
-  String get stage1Year => _localizedValues[locale.languageCode]?['stage_1_year'] ?? '1 Year';
+  String get markCompletedToday =>
+      _localizedValues[locale.languageCode]?['mark_completed_today'] ??
+      'Mark as Completed Today';
+  String get startDate =>
+      _localizedValues[locale.languageCode]?['start_date'] ?? 'Start Date';
+  String get daysRemaining =>
+      _localizedValues[locale.languageCode]?['days_remaining'] ??
+      'Days Remaining';
+  String get timeRemaining =>
+      _localizedValues[locale.languageCode]?['time_remaining'] ??
+      'Time Remaining';
+  String get stage =>
+      _localizedValues[locale.languageCode]?['stage'] ?? 'Stage';
+  String get selectStage =>
+      _localizedValues[locale.languageCode]?['select_stage'] ?? 'Select Stage';
+  String get stage24Hours =>
+      _localizedValues[locale.languageCode]?['stage_24_hours'] ?? '24 Hours';
+  String get stage3Days =>
+      _localizedValues[locale.languageCode]?['stage_3_days'] ?? '3 Days';
+  String get stage1Week =>
+      _localizedValues[locale.languageCode]?['stage_1_week'] ?? '1 Week';
+  String get stage1Month =>
+      _localizedValues[locale.languageCode]?['stage_1_month'] ?? '1 Month';
+  String get stage1Quarter =>
+      _localizedValues[locale.languageCode]?['stage_1_quarter'] ?? '1 Quarter';
+  String get stage1Year =>
+      _localizedValues[locale.languageCode]?['stage_1_year'] ?? '1 Year';
   String get icon => _localizedValues[locale.languageCode]?['icon'] ?? 'Icon';
-  String get selectIcon => _localizedValues[locale.languageCode]?['select_icon'] ?? 'Select Icon';
-  String get daysElapsed => _localizedValues[locale.languageCode]?['days_elapsed'] ?? 'Days Elapsed';
-  String get timeElapsed => _localizedValues[locale.languageCode]?['time_elapsed'] ?? 'Time Elapsed';
-  String get startTime => _localizedValues[locale.languageCode]?['start_time'] ?? 'Start Time';
-  String get editHabit => _localizedValues[locale.languageCode]?['edit_habit'] ?? 'Edit Habit';
-  String get pleaseEnterHabitName => _localizedValues[locale.languageCode]?['please_enter_habit_name'] ?? 'Please enter habit name';
-  String get targetStage => _localizedValues[locale.languageCode]?['target_stage'] ?? 'Target Stage';
-  String get reminderTime => _localizedValues[locale.languageCode]?['reminder_time'] ?? 'Reminder Time';
-  String get setReminder => _localizedValues[locale.languageCode]?['set_reminder'] ?? 'Set Reminder';
-  String get reminderEnabled => _localizedValues[locale.languageCode]?['reminder_enabled'] ?? 'Reminder Enabled';
-  String get reminderDisabled => _localizedValues[locale.languageCode]?['reminder_disabled'] ?? 'Reminder Disabled';
-  String get repeatFrequency => _localizedValues[locale.languageCode]?['repeat_frequency'] ?? 'Repeat Frequency';
-  String get daily => _localizedValues[locale.languageCode]?['daily'] ?? 'Daily';
-  String get weekly => _localizedValues[locale.languageCode]?['weekly'] ?? 'Weekly';
-  String get monthly => _localizedValues[locale.languageCode]?['monthly'] ?? 'Monthly';
-  String get custom => _localizedValues[locale.languageCode]?['custom'] ?? 'Custom';
-  String get habitCreated => _localizedValues[locale.languageCode]?['habit_created'] ?? 'Habit created successfully';
-  String get error => _localizedValues[locale.languageCode]?['error'] ?? 'Error';
-  String get selectDate => _localizedValues[locale.languageCode]?['select_date'] ?? 'Select date';
-  String get saveHabit => _localizedValues[locale.languageCode]?['save_habit'] ?? 'Save Habit';
+  String get selectIcon =>
+      _localizedValues[locale.languageCode]?['select_icon'] ?? 'Select Icon';
+  String get daysElapsed =>
+      _localizedValues[locale.languageCode]?['days_elapsed'] ?? 'Days Elapsed';
+  String get timeElapsed =>
+      _localizedValues[locale.languageCode]?['time_elapsed'] ?? 'Time Elapsed';
+  String get startTime =>
+      _localizedValues[locale.languageCode]?['start_time'] ?? 'Start Time';
+  String get editHabit =>
+      _localizedValues[locale.languageCode]?['edit_habit'] ?? 'Edit Habit';
+  String get pleaseEnterHabitName =>
+      _localizedValues[locale.languageCode]?['please_enter_habit_name'] ??
+      'Please enter habit name';
+  String get targetStage =>
+      _localizedValues[locale.languageCode]?['target_stage'] ?? 'Target Stage';
+  String get reminderTime =>
+      _localizedValues[locale.languageCode]?['reminder_time'] ??
+      'Reminder Time';
+  String get setReminder =>
+      _localizedValues[locale.languageCode]?['set_reminder'] ?? 'Set Reminder';
+  String get reminderEnabled =>
+      _localizedValues[locale.languageCode]?['reminder_enabled'] ??
+      'Reminder Enabled';
+  String get reminderDisabled =>
+      _localizedValues[locale.languageCode]?['reminder_disabled'] ??
+      'Reminder Disabled';
+  String get repeatFrequency =>
+      _localizedValues[locale.languageCode]?['repeat_frequency'] ??
+      'Repeat Frequency';
+  String get daily =>
+      _localizedValues[locale.languageCode]?['daily'] ?? 'Daily';
+  String get weekly =>
+      _localizedValues[locale.languageCode]?['weekly'] ?? 'Weekly';
+  String get monthly =>
+      _localizedValues[locale.languageCode]?['monthly'] ?? 'Monthly';
+  String get custom =>
+      _localizedValues[locale.languageCode]?['custom'] ?? 'Custom';
+  String get habitCreated =>
+      _localizedValues[locale.languageCode]?['habit_created'] ??
+      'Habit created successfully';
+  String get error =>
+      _localizedValues[locale.languageCode]?['error'] ?? 'Error';
+  String get selectDate =>
+      _localizedValues[locale.languageCode]?['select_date'] ?? 'Select date';
+  String get saveHabit =>
+      _localizedValues[locale.languageCode]?['save_habit'] ?? 'Save Habit';
+  String get selectStartDateAndTime =>
+      _localizedValues[locale.languageCode]?['select_start_date_and_time'] ??
+      'Select Start Date and Time';
+  String get selectedDateTime =>
+      _localizedValues[locale.languageCode]?['selected_date_time'] ??
+      'Selected Date and Time';
 }

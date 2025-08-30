@@ -41,31 +41,31 @@ class HabitService {
     final habit = await getHabitById(id);
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    
+
     // Check if already completed today
     final isAlreadyCompletedToday = habit.completionDates.any((date) {
       final completionDate = DateTime(date.year, date.month, date.day);
       return completionDate.isAtSameMomentAs(today);
     });
-    
+
     if (isAlreadyCompletedToday) {
       return habit;
     }
-    
+
     final updatedHabit = habit.copyWith(
       completionDates: [...habit.completionDates, today],
       streakCount: habit.streakCount + 1,
     );
-    
+
     await updateHabit(updatedHabit);
     return updatedHabit;
   }
-  
+
   // Advance habit to next stage
   Future<Habit> advanceHabitToNextStage(String id) async {
     final habit = await getHabitById(id);
     final now = DateTime.now();
-    
+
     // Determine next stage
     HabitStage nextStage;
     switch (habit.stage) {
@@ -89,17 +89,20 @@ class HabitService {
         nextStage = HabitStage.year1;
         break;
     }
-    
+
     // Calculate new stage dates
     final newStageStartDate = now;
-    final newStageEndDate = Habit.calculateStageEndDate(newStageStartDate, nextStage);
-    
+    final newStageEndDate = Habit.calculateStageEndDate(
+      newStageStartDate,
+      nextStage,
+    );
+
     final updatedHabit = habit.copyWith(
       stage: nextStage,
       currentStageStartDate: newStageStartDate,
       currentStageEndDate: newStageEndDate,
     );
-    
+
     await updateHabit(updatedHabit);
     return updatedHabit;
   }
