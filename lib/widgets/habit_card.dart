@@ -306,18 +306,13 @@ class _HabitCardState extends State<HabitCard>
                                     : _progressAnimation.value,
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    color: _progressAnimation.value >= 1.0
-                                        ? Colors
-                                              .green // 完成时显示绿色
-                                        : _getStageColor(widget.habit.stage),
+                                    color: _getStageColor(widget.habit.stage),
                                     borderRadius: BorderRadius.circular(10),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: _progressAnimation.value >= 1.0
-                                            ? Colors.green.withValues(alpha: 0.5)
-                                            : _getStageColor(
-                                                widget.habit.stage,
-                                              ).withValues(alpha: 0.5),
+                                        color: _getStageColor(
+                                            widget.habit.stage,
+                                          ).withValues(alpha: 0.5),
                                         blurRadius: 4,
                                         offset: const Offset(0, 2),
                                       ),
